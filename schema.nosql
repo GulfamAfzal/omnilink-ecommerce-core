@@ -1,0 +1,169 @@
+
+// ---------------------------------------------------------
+// DOMAIN: PRODUCT CATALOG (Referencing + Embedding)
+// ---------------------------------------------------------
+
+// Collection 1: Products (Parent)
+db.Products.insertMany([
+  {
+    _id: ObjectId("65f1a1a1a1a1a1a1a1a1a1a1"),
+    name: "MacBook Pro 14-inch",
+    description: "Supercharged by M3 Pro chips for extreme performance.",
+    brand: "Apple",
+    base_price: NumberDecimal("1999.00"),
+    media: [{ url: "https://images.apple.com/mbp.jpg", type: "image", is_primary: true }], // Embedding
+    categories: [{ name: "Laptops", slug: "laptops" }] // Embedding
+  },
+  {
+    _id: ObjectId("65f1a1a1a1a1a1a1a1a1a1a2"),
+    name: "iPhone 15 Pro",
+    description: "A17 Pro chip and a lightweight titanium design.",
+    brand: "Apple",
+    base_price: NumberDecimal("999.00"),
+    media: [{ url: "https://images.apple.com/iphone.jpg", type: "image", is_primary: true }],
+    categories: [{ name: "Smartphones", slug: "phones" }]
+  },
+  {
+    _id: ObjectId("65f1a1a1a1a1a1a1a1a1a1a3"),
+    name: "Sony WH-1000XM5",
+    description: "Industry-leading noise cancellation headphones.",
+    brand: "Sony",
+    base_price: NumberDecimal("350.00"),
+    media: [{ url: "https://images.sony.com/wh1000.jpg", type: "image", is_primary: true }],
+    categories: [{ name: "Audio", slug: "audio" }]
+  }
+]);
+
+// Collection 2: Product_Variants (The Bridge - References Products)
+db.Product_Variants.insertMany([
+  {
+    _id: "PROD_MBP14_M3_001", // Matches Oracle ORDER_DETAIL.product_variant_id
+    product_id: ObjectId("65f1a1a1a1a1a1a1a1a1a1a1"), // Referencing Parent
+    sku: "APL-MBP-14-M3-BLK",
+    specifications: { chip: "M3 Pro", ram: "18GB", storage: "512GB" },
+    price: NumberDecimal("1999.00"),
+    currency: "USD",
+    variant_attributes: [{ type: "Color", label: "Space Black" }]
+  },
+  {
+    _id: "PROD_IPHONE_15_001", // Matches Oracle ORDER_DETAIL.product_variant_id
+    product_id: ObjectId("65f1a1a1a1a1a1a1a1a1a1a2"),
+    sku: "APL-IPH15-PRO-BLU",
+    specifications: { display: "6.1-inch", storage: "128GB" },
+    price: NumberDecimal("999.00"),
+    currency: "USD",
+    variant_attributes: [{ type: "Color", label: "Blue Titanium" }]
+  },
+  {
+    _id: "PROD_SONY_WH1000", // Matches Oracle ORDER_DETAIL.product_variant_id
+    product_id: ObjectId("65f1a1a1a1a1a1a1a1a1a1a3"),
+    sku: "SNY-WH-XM5-SLV",
+    specifications: { weight: "250g", connection: "Bluetooth 5.2" },
+    price: NumberDecimal("350.00"),
+    currency: "USD",
+    variant_attributes: [{ type: "Color", label: "Silver" }]
+  }
+]);
+
+// Collection 3: Categories (Detailed Hierarchy)
+db.Categories.insertMany([
+  { _id: "CAT_LAPTOPS", name: "Laptops", slug: "laptops", parent_id: "CAT_ELECTRONICS" },
+  { _id: "CAT_PHONES", name: "Smartphones", slug: "phones", parent_id: "CAT_ELECTRONICS" },
+  { _id: "CAT_AUDIO", name: "Audio & Headphones", slug: "audio", parent_id: "CAT_ELECTRONICS" }
+]);
+
+// ---------------------------------------------------------
+// DOMAIN: LOGISTICS & STORES (Sharding Prep)
+// ---------------------------------------------------------
+
+// Collection 4: Stores (References Oracle User IDs)
+db.Stores.insertMany([
+  { _id: "STORE_NYC_01", name: "Apple Manhattan", owner_user_id: 101, region_id: 1, location: "New York" },
+  { _id: "STORE_KHI_01", name: "Tech Park Karachi", owner_user_id: 103, region_id: 2, location: "Karachi" },
+  { _id: "STORE_DXB_01", name: "Dubai Mall Hub", owner_user_id: 104, region_id: 5, location: "Dubai" }
+]);
+
+// Collection 5: Inventory (References Variants + Stores)
+db.Inventory.insertMany([
+  { variant_id: "PROD_MBP14_M3_001", store_id: "STORE_NYC_01", region_id: 1, quantity: 50 },
+  { variant_id: "PROD_MBP14_M3_001", store_id: "STORE_KHI_01", region_id: 2, quantity: 15 },
+  { variant_id: "PROD_IPHONE_15_001", store_id: "STORE_DXB_01", region_id: 5, quantity: 100 }
+]);
+
+// Collection 6: Warehouse_Metadata
+db.Warehouse_Metadata.insertMany([
+  { _id: "WH_EAST_01", name: "NJ Logistics Hub", region_id: 1, geo_location: { type: "Point", coordinates: [-74.1, 40.7] } },
+  { _id: "WH_ASIA_01", name: "Karachi Port Center", region_id: 2, geo_location: { type: "Point", coordinates: [66.9, 24.8] } }
+]);
+
+// Collection 7: Stock_Logs (Embedding Detail into Log)
+db.Stock_Logs.insertOne({
+    inventory_id: ObjectId(), 
+    timestamp: new Date(),
+    type: "Inbound",
+    change_detail: { // Embedding
+      reason: "Initial Seeding",
+      operator_id: 101, // Admin from Oracle
+      previous_qty: 0,
+      new_qty: 50
+    }
+});
+
+// ---------------------------------------------------------
+// DOMAIN: SALES & USER EXPERIENCE
+// ---------------------------------------------------------
+
+// Collection 8: Carts (Embedding Items for Speed)
+db.Carts.insertOne({
+    user_id: 102, // Matches Oracle USER_ACCOUNTS.user_id
+    items: [ // Embedding
+      { variant_id: "PROD_MBP14_M3_001", quantity: 1, price_at_addition: NumberDecimal("1999.00") }
+    ],
+    updated_at: new Date()
+});
+
+// Collection 9: Reviews (Embedding Media)
+db.Reviews.insertOne({
+    product_id: ObjectId("65f1a1a1a1a1a1a1a1a1a1a1"),
+    user_id: 105,
+    rating: 5,
+    comment: "Simply the best pro laptop on the market.",
+    images: ["review_user5_mbp.jpg"], // Embedding
+    created_at: new Date()
+});
+
+// Collection 10: User_Sessions
+db.User_Sessions.insertOne({
+  session_token: "tkn_oms_2026_xyz",
+  user_id: 102,
+  login_time: new Date(),
+  device_info: "Windows 11 / Chrome"
+});
+
+// Collection 11: Wishlists (Referencing Variants)
+db.Wishlists.insertOne({
+  user_id: 102,
+  saved_items: [
+    { variant_id: "PROD_SONY_WH1000", added_at: new Date() }
+  ]
+});
+
+// Collection 12: Promotions
+db.Promotions.insertOne({
+  code: "TECH_PRO_2026",
+  discount_percent: 15,
+  applicable_regions: [1, 2, 5],
+  active: true
+});
+
+// Final check: List collections
+
+db.getCollectionNames();
+
+
+
+
+
+
+
+

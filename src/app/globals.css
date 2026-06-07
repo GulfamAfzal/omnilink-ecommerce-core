@@ -24,3 +24,29 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* --- Responsive grid breakpoints --- */
+@media (max-width: 1200px) {
+  .product-grid { grid-template-columns: repeat(3, 1fr) !important; }
+}
+
+@media (max-width: 900px) {
+  .product-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+  .page-layout   { flex-direction: column !important; }
+  .filter-sidebar { width: 100% !important; position: static !important; }
+}
+
+@media (max-width: 560px) {
+  .product-grid { grid-template-columns: 1fr !important; }
+}
+

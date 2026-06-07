@@ -9,7 +9,7 @@ export default function AdminOrdersPage() {
     fetch('/api/admin/orders')
       .then(res => res.json())
       .then(data => {
-        setOrders(data);
+        setOrders(data || []);
         setLoading(false);
       });
   }, []);
@@ -36,7 +36,7 @@ export default function AdminOrdersPage() {
         <header style={headerStyle}>
           <div>
             <h1 style={titleStyle}>Global Distributed Orders</h1>
-            <p style={subtitleStyle}>Real-time synchronization: <span style={badgeStyle}>Oracle ACID Core</span></p>
+            <p style={subtitleStyle}>Cross-Engine Aggregation: <span style={badgeStyle}>Azure SQL + MongoDB Atlas</span></p>
           </div>
           <button style={refreshButtonStyle} onClick={() => window.location.reload()}>Refresh Data</button>
         </header>
@@ -53,21 +53,22 @@ export default function AdminOrdersPage() {
           </div>
           <div style={cardStyle}>
             <span style={cardLabelStyle}>System Status</span>
-            <div style={{...cardValueStyle, color: '#38a169'}}>Active</div>
+            <div style={{...cardValueStyle, color: '#38a169'}}>Active & Synced</div>
           </div>
         </section>
 
         {/* Modern Data Table */}
         <section style={tableWrapperStyle}>
           {loading ? (
-            <div style={loaderStyle}>Synchronizing with Oracle Relational Nodes...</div>
+            <div style={loaderStyle}>Synchronizing with Distributed Engines...</div>
           ) : (
             <table style={tableStyle}>
               <thead>
                 <tr style={tableHeaderRowStyle}>
-                  <th style={thStyle}>ID</th>
+                  <th style={thStyle}>Order ID</th>
                   <th style={thStyle}>Customer</th>
-                  <th style={thStyle}>Transaction Amount</th>
+                  <th style={thStyle}>Aggregated Items (NoSQL)</th>
+                  <th style={thStyle}>Amount (SQL)</th>
                   <th style={thStyle}>Status</th>
                   <th style={thStyle}>Timestamp</th>
                 </tr>
@@ -77,11 +78,24 @@ export default function AdminOrdersPage() {
                   <tr key={order.id} style={index % 2 === 0 ? trEvenStyle : trOddStyle}>
                     <td style={tdStyle}><strong>#{order.id}</strong></td>
                     <td style={tdStyle}>{order.customer}</td>
+                    <td style={tdStyle}>
+                      <div style={itemsList}>
+                        {order.items && order.items.map((item, i) => (
+                          <div key={i} style={itemLine}>
+                            <img src={item.image_url} alt={item.product_name} style={itemThumb} />
+                            <div>
+                              <div style={itemTitle}>{item.product_name}</div>
+                              <div style={itemMeta}>Qty: {item.quantity} | {item.product_variant_id.substring(0,8)}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
                     <td style={{...tdStyle, color: '#2c5282', fontWeight: 'bold'}}>${order.amount}</td>
                     <td style={tdStyle}>
                       <span style={statusBadgeStyle}>{order.status}</span>
                     </td>
-                    <td style={tdStyle}>{order.date}</td>
+                    <td style={tdStyle}>{new Date(order.date).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -98,13 +112,13 @@ export default function AdminOrdersPage() {
 const containerStyle = {
   display: 'flex',
   minHeight: '100vh',
-  backgroundColor: '#f7fafc',
+  backgroundColor: '#f8fafc',
   fontFamily: '"Inter", "Segoe UI", sans-serif',
 };
 
 const sidebarStyle = {
   width: '260px',
-  backgroundColor: '#2d3748',
+  backgroundColor: '#0f172a',
   color: 'white',
   padding: '30px 20px',
 };
@@ -113,13 +127,13 @@ const logoStyle = {
   fontSize: '24px',
   fontWeight: 'bold',
   marginBottom: '40px',
-  color: '#63b3ed',
+  color: '#818cf8',
   letterSpacing: '1px'
 };
 
 const navStyle = { display: 'flex', flexDirection: 'column', gap: '10px' };
-const navItemStyle = { padding: '12px', borderRadius: '8px', cursor: 'pointer', color: '#a0aec0' };
-const navItemActiveStyle = { ...navItemStyle, backgroundColor: '#4a5568', color: 'white' };
+const navItemStyle = { padding: '12px', borderRadius: '8px', cursor: 'pointer', color: '#94a3b8' };
+const navItemActiveStyle = { ...navItemStyle, backgroundColor: '#1e293b', color: 'white' };
 
 const mainContentStyle = { flex: 1, padding: '40px' };
 
@@ -130,13 +144,13 @@ const headerStyle = {
   marginBottom: '30px'
 };
 
-const titleStyle = { margin: 0, fontSize: '28px', color: '#1a202c' };
-const subtitleStyle = { margin: '5px 0 0', color: '#718096' };
+const titleStyle = { margin: 0, fontSize: '28px', color: '#0f172a', fontWeight: '900' };
+const subtitleStyle = { margin: '5px 0 0', color: '#64748b' };
 const badgeStyle = { fontWeight: 'bold', color: '#4a5568' };
 
 const refreshButtonStyle = {
   padding: '10px 20px',
-  backgroundColor: '#3182ce',
+  backgroundColor: '#0f172a',
   color: 'white',
   border: 'none',
   borderRadius: '6px',
@@ -153,35 +167,43 @@ const statsGridStyle = {
 
 const cardStyle = {
   backgroundColor: 'white',
-  padding: '20px',
-  borderRadius: '12px',
-  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+  padding: '24px',
+  borderRadius: '16px',
+  border: '1px solid #e2e8f0',
+  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)',
 };
 
-const cardLabelStyle = { color: '#718096', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.5px' };
-const cardValueStyle = { fontSize: '24px', fontWeight: 'bold', marginTop: '10px', color: '#2d3748' };
+const cardLabelStyle = { color: '#64748b', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' };
+const cardValueStyle = { fontSize: '28px', fontWeight: '900', marginTop: '10px', color: '#0f172a' };
 
 const tableWrapperStyle = {
   backgroundColor: 'white',
-  borderRadius: '12px',
+  borderRadius: '16px',
   overflow: 'hidden',
-  boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+  border: '1px solid #e2e8f0',
+  boxShadow: '0 10px 15px -3px rgba(0,0,0,0.02)',
 };
 
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
-const tableHeaderRowStyle = { backgroundColor: '#edf2f7', borderBottom: '2px solid #e2e8f0' };
-const thStyle = { padding: '15px', textAlign: 'left', color: '#4a5568', fontSize: '13px', fontWeight: '600' };
-const tdStyle = { padding: '15px', fontSize: '14px', color: '#2d3748' };
+const tableHeaderRowStyle = { backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0' };
+const thStyle = { padding: '16px 20px', textAlign: 'left', color: '#475569', fontSize: '13px', fontWeight: '700', textTransform: 'uppercase' };
+const tdStyle = { padding: '20px', fontSize: '14px', color: '#1e293b', borderBottom: '1px solid #f1f5f9' };
 const trEvenStyle = { backgroundColor: '#ffffff' };
 const trOddStyle = { backgroundColor: '#fcfcfc' };
 
 const statusBadgeStyle = {
-  backgroundColor: '#c6f6d5',
-  color: '#22543d',
-  padding: '4px 10px',
+  backgroundColor: '#dcfce7',
+  color: '#166534',
+  padding: '6px 12px',
   borderRadius: '20px',
   fontSize: '12px',
-  fontWeight: 'bold'
+  fontWeight: '700'
 };
 
-const loaderStyle = { padding: '40px', textAlign: 'center', color: '#718096', fontStyle: 'italic' };
+const loaderStyle = { padding: '60px', textAlign: 'center', color: '#64748b', fontWeight: '600' };
+
+const itemsList = { display: 'flex', flexDirection: 'column', gap: '8px' };
+const itemLine = { display: 'flex', alignItems: 'center', gap: '12px' };
+const itemThumb = { width: '40px', height: '40px', objectFit: 'contain', backgroundColor: '#f1f5f9', borderRadius: '6px', padding: '4px' };
+const itemTitle = { fontSize: '13px', fontWeight: '700', color: '#0f172a' };
+const itemMeta = { fontSize: '11px', color: '#64748b' };

@@ -7,7 +7,7 @@ export async function POST(request) {
   let pool;
   try {
     const body = await request.json();
-    const { username, email, password, firstName, lastName, contact, userType, regionId } = body;
+    const { username, email, password, firstName, lastName, contact, userType = 'Customer', regionId = 1 } = body;
 
     pool = await getSqlConnection();
 
