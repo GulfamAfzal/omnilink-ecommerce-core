@@ -12,19 +12,15 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
 @keyframes spin {
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -35,7 +31,30 @@ body {
   50%       { opacity: 0.4; }
 }
 
-/* --- Responsive grid breakpoints --- */
+@keyframes slideInRight {
+  from { transform: translateX(40px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-40px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes stepSuccess {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* ============================================
+   RESPONSIVE GRID BREAKPOINTS
+   ============================================ */
 @media (max-width: 1200px) {
   .product-grid { grid-template-columns: repeat(3, 1fr) !important; }
 }
@@ -50,3 +69,42 @@ body {
   .product-grid { grid-template-columns: 1fr !important; }
 }
 
+/* ============================================
+   CART DRAWER TRANSITION UTILITIES
+   ============================================ */
+.cart-drawer-open {
+  transform: translateX(0) !important;
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f8fafc; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ============================================
+   INTERACTIVE ELEMENT MICRO-ANIMATIONS
+   ============================================ */
+button:active { transform: scale(0.97); }
+
+/* Star rating hover */
+.star-hover { transition: color 0.15s, transform 0.15s; }
+.star-hover:hover { transform: scale(1.2); }
+
+/* Sidebar nav active item indicator */
+.nav-active-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #6366f1;
+  border-radius: 50%;
+  margin-left: auto;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Log entry hover */
+.log-entry:hover {
+  background-color: #f8fafc;
+}

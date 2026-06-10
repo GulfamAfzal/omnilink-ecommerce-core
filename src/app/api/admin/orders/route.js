@@ -8,16 +8,18 @@ export async function GET() {
   try {
     pool = await getSqlConnection();
 
-    // 1. Fetch from Azure SQL (Relational Database)
+    // Actual schema: ORDERS(order_id, user_id, region_id, payment_id, order_date, status, total_amount, shipping_snapshot)
+    //                ORDER_DETAIL(detail_id, order_id, product_variant_id, unit_price, quantity)
     const sqlResult = await pool.request().query(`
-      SELECT o.order_id, o.user_id, o.region_id, o.subtotal, o.tax_amount, o.total_amount, o.status,
-             o.order_date as created_at, u.username,
-             d.order_detail_id, d.product_variant_id, d.quantity, d.unit_price
+      SELECT o.order_id, o.user_id, o.region_id, o.total_amount, o.status,
+             o.order_date as created_at, o.shipping_snapshot, u.username,
+             d.detail_id as order_detail_id, d.product_variant_id, d.quantity, d.unit_price
       FROM ORDERS o
       JOIN USERS u ON o.user_id = u.user_id
       LEFT JOIN ORDER_DETAIL d ON o.order_id = d.order_id
       ORDER BY o.order_date DESC
     `);
+
 
     const rawRows = sqlResult.recordset;
 
@@ -25,12 +27,16 @@ export async function GET() {
     const ordersMap = new Map();
     for (const row of rawRows) {
       if (!ordersMap.has(row.order_id)) {
+        // Parse shipping_snapshot JSON if available (contains subtotal, tax_amount stored by order placement)
+        let snapshot = {};
+        try { snapshot = JSON.parse(row.shipping_snapshot || '{}'); } catch(e) {}
+        
         ordersMap.set(row.order_id, {
           id: row.order_id,
           customer: row.username,
           region_id: row.region_id,
-          subtotal: row.subtotal,
-          tax_amount: row.tax_amount,
+          subtotal: snapshot.subtotal || row.total_amount || 0,
+          tax_amount: snapshot.tax_amount || 0,
           amount: row.total_amount,
           status: row.status,
           date: row.created_at,
@@ -69,7 +75,7 @@ export async function GET() {
         if (variant) {
           const product = await db.collection("Products").findOne({ _id: variant.product_id });
           
-          let productName = product ? product.name : \`Hardware Node (\${variant.sku})\`;
+          let productName = product ? product.name : `Hardware Node (${variant.sku})`;
           let image_url = variant.image_url || product?.media?.[0]?.url || '/logo.png';
           const lowerName = productName.toLowerCase();
           
