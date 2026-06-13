@@ -2,12 +2,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminSidebar, containerStyle, mainContentStyle } from '../orders/page';
+import { AlertTriangle, CheckCircle, Package, Settings, Factory, ShoppingCart } from 'lucide-react';
 
 const TABS = [
-  { id: 'users',    label: '👤 User Regions',  badge: 'FIX TAX' },
-  { id: 'products', label: '📦 Add Product',    badge: 'MongoDB' },
-  { id: 'variants', label: '🔧 Add Variant',    badge: 'MongoDB' },
-  { id: 'inventory',label: '📊 Add Inventory',  badge: 'MongoDB' },
+  { id: 'users',    label: 'User Regions',  badge: 'FIX TAX' },
+  { id: 'products', label: 'Add Product',    badge: 'MongoDB' },
+  { id: 'variants', label: 'Add Variant',    badge: 'MongoDB' },
+  { id: 'inventory',label: 'Add Inventory',  badge: 'MongoDB' },
 ];
 
 const REGIONS = [
@@ -37,7 +38,7 @@ export default function AdminDataPage() {
             <p style={subtitleStyle}>Add & manage Products, Variants, Inventory, and fix user region assignments for correct tax calculation</p>
           </div>
           <div style={alertBanner}>
-            ⚠ If tax shows 0 or errors, assign a region to your user in the <strong>User Regions</strong> tab
+            <AlertTriangle size={14} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} /> If tax shows 0 or errors, assign a region to your user in the <strong>User Regions</strong> tab
           </div>
         </header>
 
@@ -132,8 +133,8 @@ function UsersTab() {
                   <td style={tdStyle}><span style={typeBadge(u.user_type)}>{u.user_type}</span></td>
                   <td style={tdStyle}>
                     {u.region_id
-                      ? <span style={okRegion}>✓ {u.region_name} (R{u.region_id})</span>
-                      : <span style={noRegion}>⚠ NOT SET</span>}
+                      ? <span style={okRegion}><CheckCircle size={12} style={{ marginRight: '4px' }} /> {u.region_name} (R{u.region_id})</span>
+                      : <span style={noRegion}><AlertTriangle size={12} style={{ marginRight: '4px' }} /> NOT SET</span>}
                   </td>
                   <td style={tdStyle}>
                     {u.tax_rate
@@ -349,17 +350,17 @@ function VariantsTab() {
         <div style={sectionTitle}>How Data Flows</div>
         <div style={sectionSub}>Each variant you create auto-creates inventory records</div>
         <div style={flowDiagram}>
-          <FlowStep icon="📦" title="Product" desc='e.g. "iPhone 16 Pro Max"' color="#6366f1" />
+          <FlowStep icon={<Package size={20} />} title="Product" desc='e.g. "iPhone 16 Pro Max"' color="#0284C7" />
           <div style={flowArrow}>↓</div>
-          <FlowStep icon="🔧" title="Product Variant" desc='e.g. SKU: APPLE-IP16PM-256-BLK, Price: $1,299' color="#3b82f6" />
+          <FlowStep icon={<Settings size={20} />} title="Product Variant" desc='e.g. SKU: APPLE-IP16PM-256-BLK, Price: $1,299' color="#0369A1" />
           <div style={flowArrow}>↓ (auto-created for each region)</div>
-          <FlowStep icon="🏭" title="Inventory Records" desc='Region 1: 10 units, Region 2: 10 units, Region 3: 10 units' color="#10b981" />
+          <FlowStep icon={<Factory size={20} />} title="Inventory Records" desc='Region 1: 10 units, Region 2: 10 units, Region 3: 10 units' color="#15803D" />
           <div style={flowArrow}>↓ (when customer adds to cart)</div>
-          <FlowStep icon="🛒" title="Cart → Order" desc="Saga pipeline: inventory decremented, SQL ORDERS created" color="#f59e0b" />
+          <FlowStep icon={<ShoppingCart size={20} />} title="Cart → Order" desc="Saga pipeline: inventory decremented, SQL ORDERS created" color="#B45309" />
         </div>
 
         <div style={tipBox}>
-          <strong>💡 Tip:</strong> To add multiple colors/sizes of the same product, create the product once, then add a separate variant for each (BLACK, WHITE, 128GB, 256GB, etc.)
+          <strong>Tip:</strong> To add multiple colors/sizes of the same product, create the product once, then add a separate variant for each (BLACK, WHITE, 128GB, 256GB, etc.)
         </div>
       </div>
     </div>
@@ -476,7 +477,7 @@ function FormField({ label, placeholder, value, onChange, type = 'text', require
 function FlowStep({ icon, title, desc, color }) {
   return (
     <div style={{ ...flowStep, borderColor: color + '40', backgroundColor: color + '08' }}>
-      <span style={{ fontSize: '20px' }}>{icon}</span>
+      <span style={{ fontSize: '20px', color, display: 'flex', alignItems: 'center' }}>{icon}</span>
       <div>
         <div style={{ fontSize: '13px', fontWeight: '800', color }}>{title}</div>
         <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>{desc}</div>
@@ -498,8 +499,10 @@ function Toast({ msg, type, full }) {
       borderColor: type === 'error' ? '#fecaca' : '#bbf7d0',
       color: type === 'error' ? '#dc2626' : '#15803d',
       marginBottom: full ? '16px' : 0,
+      display: 'flex', alignItems: 'center'
     }}>
-      {type === 'error' ? '⚠ ' : '✓ '}{msg}
+      {type === 'error' ? <AlertTriangle size={16} style={{ marginRight: '8px' }} /> : <CheckCircle size={16} style={{ marginRight: '8px' }} />}
+      {msg}
     </div>
   );
 }
@@ -512,15 +515,15 @@ const titleStyle = { margin: 0, fontSize: '28px', color: '#0f172a', fontWeight: 
 const subtitleStyle = { margin: '6px 0 0', color: '#64748b', fontSize: '14px', maxWidth: '600px' };
 const alertBanner = { backgroundColor: '#fef9c3', border: '1px solid #fde047', color: '#854d0e', padding: '12px 20px', borderRadius: '12px', fontSize: '13px', fontWeight: '600', maxWidth: '380px', lineHeight: '1.5' };
 
-const tabBar = { display: 'flex', gap: '8px', marginBottom: '24px', backgroundColor: 'white', padding: '6px', borderRadius: '16px', border: '1px solid #e2e8f0', overflowX: 'auto' };
-const tabBtn = { display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', background: 'none', border: 'none', borderRadius: '12px', color: '#64748b', fontWeight: '600', cursor: 'pointer', fontSize: '14px', whiteSpace: 'nowrap' };
-const activeTabBtn = { ...tabBtn, background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: 'white', fontWeight: '700', boxShadow: '0 4px 12px rgba(15,23,42,0.2)' };
+const tabBar = { display: 'flex', gap: '8px', marginBottom: '24px', backgroundColor: '#D9E6F0', padding: '6px', borderRadius: '16px', border: '1px solid #B0C4DE', overflowX: 'auto' };
+const tabBtn = { display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', background: 'none', border: 'none', borderRadius: '12px', color: '#64748B', fontWeight: '600', cursor: 'pointer', fontSize: '14px', whiteSpace: 'nowrap' };
+const activeTabBtn = { ...tabBtn, background: 'linear-gradient(to right, #2563EB, #1D4ED8)', color: 'white', fontWeight: '700', boxShadow: '0 4px 12px rgba(37,99,235,0.2)' };
 const tabBadge = { fontSize: '10px', fontWeight: '800', padding: '2px 8px', borderRadius: '10px', letterSpacing: '0.3px' };
 
-const sectionCard = { backgroundColor: 'white', borderRadius: '20px', border: '1px solid #e2e8f0', padding: '28px', boxShadow: '0 2px 12px rgba(0,0,0,0.03)' };
+const sectionCard = { backgroundColor: '#EBF2F7', borderRadius: '20px', border: '1px solid #B0C4DE', padding: '28px', boxShadow: '0 2px 12px rgba(0,0,0,0.03)' };
 const sectionHead = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' };
-const sectionTitle = { fontSize: '18px', fontWeight: '800', color: '#0f172a', marginBottom: '4px' };
-const sectionSub = { fontSize: '13px', color: '#94a3b8', marginBottom: '20px', lineHeight: '1.5' };
+const sectionTitle = { fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '4px' };
+const sectionSub = { fontSize: '13px', color: '#64748B', marginBottom: '20px', lineHeight: '1.5' };
 
 const regionRefBox = { display: 'flex', gap: '12px', marginBottom: '20px' };
 const regionRefCard = { flex: 1, backgroundColor: '#f8fafc', borderRadius: '12px', padding: '14px', border: '1px solid #e2e8f0', textAlign: 'center' };

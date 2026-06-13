@@ -3,6 +3,7 @@ import { getSqlConnection } from '@/lib/azuresql';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import sql from 'mssql';
+import { sendOrderConfirmationEmail } from '@/lib/emailService';
 
 // Tax rate map (since REGIONS table has no tax_rate column, we handle it in app)
 const TAX_RATES = { 1: 0.08, 2: 0.10, 3: 0.20, 4: 0.10, 5: 0.05 };
@@ -162,6 +163,31 @@ export async function POST(request) {
         console.error("CRITICAL: Saga compensating action failed!", compensateError);
       }
       throw new Error("Distributed transaction failed during NoSQL phase");
+    }
+
+    // --- Send Order Confirmation Email (non-blocking) ---
+    try {
+      // Fetch user email from Azure SQL
+      const emailResult = await pool.request()
+        .input('userId', sql.Int, userId)
+        .query(`SELECT email, first_name FROM USERS WHERE user_id = @userId`);
+
+      if (emailResult.recordset.length > 0) {
+        const { email, first_name } = emailResult.recordset[0];
+        sendOrderConfirmationEmail({
+          toEmail: email,
+          customerName: first_name || 'Valued Customer',
+          orderId,
+          items: cartItems.map(i => ({ sku: i.sku, quantity: i.quantity, price: i.price })),
+          subtotal,
+          taxAmount,
+          totalAmount,
+          currency: userRegion.currency || 'USD',
+          regionName: userRegion.region_name || 'Global',
+        }).catch(emailErr => console.warn('⚠️ Email send failed (non-critical):', emailErr.message));
+      }
+    } catch (emailLookupErr) {
+      console.warn('⚠️ Could not fetch email for notification:', emailLookupErr.message);
     }
 
     return NextResponse.json({

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminSidebar, containerStyle, mainContentStyle } from '../orders/page';
+import { DollarSign, Package, ShoppingCart, Globe } from 'lucide-react';
 
 export default function AdminAnalyticsPage() {
   const router = useRouter();
@@ -47,10 +48,10 @@ export default function AdminAnalyticsPage() {
             {/* Top Metrics */}
             <div style={metricsGrid}>
               {[
-                { label: 'Total Revenue', value: `$${(data.totalRevenue || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: '💰', color: '#10b981', bg: '#f0fdf4' },
-                { label: 'Total Orders', value: data.totalOrders || 0, icon: '📦', color: '#6366f1', bg: '#f0f4ff' },
-                { label: 'Items Sold', value: data.totalItems || 0, icon: '🛒', color: '#f59e0b', bg: '#fffbeb' },
-                { label: 'Active Regions', value: data.revenueByRegion?.length || 0, icon: '🌍', color: '#3b82f6', bg: '#eff6ff' },
+                { label: 'Total Revenue', value: `$${(data.totalRevenue || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: <DollarSign size={28} color="#15803D" />, color: '#15803D', bg: '#DCFCE7' },
+                { label: 'Total Orders', value: data.totalOrders || 0, icon: <Package size={28} color="#0284C7" />, color: '#0284C7', bg: '#E0F2FE' },
+                { label: 'Items Sold', value: data.totalItems || 0, icon: <ShoppingCart size={28} color="#B45309" />, color: '#B45309', bg: '#FEF3C7' },
+                { label: 'Active Regions', value: data.revenueByRegion?.length || 0, icon: <Globe size={28} color="#0369A1" />, color: '#0369A1', bg: '#E0F2FE' },
               ].map((m, i) => (
                 <div key={i} style={{ ...metricCard, backgroundColor: m.bg, borderColor: m.color + '30' }}>
                   <div style={metricIcon}>{m.icon}</div>
@@ -127,36 +128,36 @@ export default function AdminAnalyticsPage() {
 }
 
 const headerStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' };
-const titleStyle = { margin: 0, fontSize: '28px', color: '#0f172a', fontWeight: '900', letterSpacing: '-0.5px' };
-const subtitleStyle = { margin: '6px 0 0', color: '#64748b', fontSize: '14px' };
-const refreshBtn = { padding: '10px 20px', backgroundColor: 'white', color: '#1e293b', border: '2px solid #e2e8f0', borderRadius: '10px', cursor: 'pointer', fontWeight: '700', fontSize: '13px' };
+const titleStyle = { margin: 0, fontSize: '28px', color: '#0F172A', fontWeight: '900', letterSpacing: '-0.5px' };
+const subtitleStyle = { margin: '6px 0 0', color: '#64748B', fontSize: '14px' };
+const refreshBtn = { padding: '10px 20px', backgroundColor: '#D9E6F0', color: '#0F172A', border: '1px solid #B0C4DE', borderRadius: '10px', cursor: 'pointer', fontWeight: '700', fontSize: '13px' };
 
 const loaderState = { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px' };
 const spinner = { width: '36px', height: '36px', border: '3px solid #f1f5f9', borderTop: '3px solid #6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite' };
 
 const metricsGrid = { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '28px' };
-const metricCard = { padding: '24px', borderRadius: '20px', border: '1px solid', textAlign: 'center' };
-const metricIcon = { fontSize: '28px', marginBottom: '8px' };
-const metricLabel = { fontSize: '11px', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' };
+const metricCard = { padding: '24px', borderRadius: '20px', border: '1px solid', textAlign: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.02)' };
+const metricIcon = { marginBottom: '12px', display: 'flex', justifyContent: 'center' };
+const metricLabel = { fontSize: '11px', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' };
 const metricValue = { fontSize: '28px', fontWeight: '900' };
 
-const regionCard = { backgroundColor: 'white', borderRadius: '20px', border: '1px solid #e2e8f0', padding: '28px', marginBottom: '28px' };
-const cardTitle = { fontSize: '16px', fontWeight: '800', color: '#0f172a', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' };
+const regionCard = { backgroundColor: '#EBF2F7', borderRadius: '20px', border: '1px solid #B0C4DE', padding: '28px', marginBottom: '28px' };
+const cardTitle = { fontSize: '16px', fontWeight: '800', color: '#0F172A', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' };
 const regionGrid = { display: 'flex', flexDirection: 'column', gap: '16px' };
 const regionRow = { display: 'grid', gridTemplateColumns: '160px 1fr 120px 80px', alignItems: 'center', gap: '16px' };
-const regionName = { fontSize: '13px', fontWeight: '700', color: '#1e293b' };
-const regionBarWrap = { height: '8px', backgroundColor: '#f1f5f9', borderRadius: '4px', overflow: 'hidden' };
-const regionBar = { height: '100%', background: 'linear-gradient(90deg, #6366f1, #3b82f6)', borderRadius: '4px', transition: 'width 0.5s ease' };
-const regionRevenue = { fontSize: '13px', fontWeight: '800', color: '#0f172a', textAlign: 'right' };
-const regionOrders = { fontSize: '11px', color: '#94a3b8', fontWeight: '600', textAlign: 'right' };
+const regionName = { fontSize: '13px', fontWeight: '700', color: '#0F172A' };
+const regionBarWrap = { height: '8px', backgroundColor: '#D9E6F0', borderRadius: '4px', overflow: 'hidden' };
+const regionBar = { height: '100%', background: 'linear-gradient(90deg, #2563EB, #0284C7)', borderRadius: '4px', transition: 'width 0.5s ease' };
+const regionRevenue = { fontSize: '13px', fontWeight: '800', color: '#0F172A', textAlign: 'right' };
+const regionOrders = { fontSize: '11px', color: '#64748B', fontWeight: '600', textAlign: 'right' };
 
-const tableSection = { backgroundColor: 'white', borderRadius: '20px', border: '1px solid #e2e8f0', padding: '28px', overflow: 'auto' };
-const noBadge = { fontSize: '10px', fontWeight: '800', color: '#10b981', backgroundColor: '#dcfce7', padding: '3px 10px', borderRadius: '20px', textTransform: 'uppercase' };
+const tableSection = { backgroundColor: '#EBF2F7', borderRadius: '20px', border: '1px solid #B0C4DE', padding: '28px', overflow: 'auto' };
+const noBadge = { fontSize: '10px', fontWeight: '800', color: '#15803D', backgroundColor: '#DCFCE7', padding: '3px 10px', borderRadius: '20px', textTransform: 'uppercase' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse', minWidth: '900px' };
-const tableHead = { backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0' };
-const thStyle = { padding: '12px 16px', textAlign: 'left', fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' };
-const tdStyle = { padding: '14px 16px', fontSize: '13px', color: '#1e293b', borderBottom: '1px solid #f8fafc' };
+const tableHead = { backgroundColor: '#D9E6F0', borderBottom: '2px solid #B0C4DE' };
+const thStyle = { padding: '12px 16px', textAlign: 'left', fontSize: '11px', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' };
+const tdStyle = { padding: '14px 16px', fontSize: '13px', color: '#0F172A', borderBottom: '1px solid #B0C4DE' };
 const trStyle = { transition: 'background 0.15s' };
-const idBadge = { fontWeight: '800', color: '#6366f1', fontSize: '12px' };
-const skuBadge = { backgroundColor: '#f0fdf4', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontWeight: '700', fontSize: '11px', fontFamily: 'monospace' };
+const idBadge = { fontWeight: '800', color: '#2563EB', fontSize: '12px' };
+const skuBadge = { backgroundColor: '#D9E6F0', color: '#0F172A', padding: '3px 8px', borderRadius: '6px', fontWeight: '700', fontSize: '11px', fontFamily: 'monospace', border: '1px solid #B0C4DE' };
 const statusPill = { fontSize: '11px', fontWeight: '800', padding: '3px 10px', borderRadius: '20px' };

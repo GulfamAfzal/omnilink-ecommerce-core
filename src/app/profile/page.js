@@ -258,59 +258,59 @@ const spinner = { width: '36px', height: '36px', border: '3px solid #e2e8f0', bo
 const miniSpinner = { width: '28px', height: '28px', border: '3px solid #e2e8f0', borderTop: '3px solid #6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite' };
 const centerMsg = { display: 'flex', justifyContent: 'center', padding: '40px' };
 
-const pageWrapper = { minHeight: '90vh', background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', padding: '48px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' };
+const pageWrapper = { minHeight: '90vh', backgroundColor: 'transparent', padding: '48px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' };
 const pageLayout = { maxWidth: '1200px', margin: '0 auto', display: 'flex', gap: '32px', alignItems: 'flex-start' };
 
-const profileSidebar = { width: '280px', flexShrink: 0, backgroundColor: 'white', borderRadius: '24px', padding: '36px 24px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'sticky', top: '100px' };
-const avatarCircle = { width: '80px', height: '80px', background: 'linear-gradient(135deg, #6366f1, #4f46e5)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', fontWeight: '800', color: 'white', marginBottom: '16px', boxShadow: '0 8px 20px rgba(99,102,241,0.3)' };
-const profileName = { fontSize: '20px', fontWeight: '800', color: '#0f172a' };
-const profileUsername = { fontSize: '13px', color: '#94a3b8', fontWeight: '600', marginTop: '4px', marginBottom: '16px' };
+const profileSidebar = { width: '280px', flexShrink: 0, backgroundColor: '#D9E6F0', borderRadius: '24px', padding: '36px 24px', border: '1px solid #B0C4DE', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'sticky', top: '100px' };
+const avatarCircle = { width: '80px', height: '80px', background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', fontWeight: '800', color: 'white', marginBottom: '16px', boxShadow: '0 8px 20px rgba(37,99,235,0.3)' };
+const profileName = { fontSize: '20px', fontWeight: '800', color: '#0F172A' };
+const profileUsername = { fontSize: '13px', color: '#64748B', fontWeight: '600', marginTop: '4px', marginBottom: '16px' };
 const roleBadgeWrap = { marginBottom: '12px' };
 const roleBadge = (color) => ({ display: 'inline-block', backgroundColor: color + '15', color, padding: '5px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: '800', border: `1px solid ${color}30` });
 const regionBadgeWrap = { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '24px' };
 const onlineDot = { width: '8px', height: '8px', backgroundColor: '#10b981', borderRadius: '50%', boxShadow: '0 0 6px rgba(16,185,129,0.6)', display: 'inline-block' };
-const regionLabel = { fontSize: '12px', color: '#475569', fontWeight: '700' };
-const backToMarketBtn = { width: '100%', padding: '12px', background: 'linear-gradient(135deg, #f1f5f9, #e2e8f0)', border: 'none', borderRadius: '12px', color: '#475569', fontWeight: '700', fontSize: '13px', cursor: 'pointer' };
+const regionLabel = { fontSize: '12px', color: '#334155', fontWeight: '700' };
+const backToMarketBtn = { width: '100%', padding: '12px', background: 'linear-gradient(135deg, #E2E8F0, #D0E1FD)', border: '1px solid #B0C4DE', borderRadius: '12px', color: '#334155', fontWeight: '700', fontSize: '13px', cursor: 'pointer' };
 
 const mainContent = { flex: 1 };
-const tabNav = { display: 'flex', gap: '8px', marginBottom: '24px', backgroundColor: 'white', padding: '6px', borderRadius: '16px', border: '1px solid #e2e8f0' };
-const tabBtn = { flex: 1, padding: '12px', background: 'none', border: 'none', borderRadius: '12px', color: '#64748b', fontWeight: '600', cursor: 'pointer', fontSize: '14px', transition: 'all 0.2s' };
-const activeTabBtn = { ...tabBtn, backgroundColor: '#0f172a', color: 'white', fontWeight: '700', boxShadow: '0 4px 10px rgba(15,23,42,0.2)' };
+const tabNav = { display: 'flex', gap: '8px', marginBottom: '24px', backgroundColor: '#D9E6F0', padding: '6px', borderRadius: '16px', border: '1px solid #B0C4DE' };
+const tabBtn = { flex: 1, padding: '12px', background: 'none', border: 'none', borderRadius: '12px', color: '#64748B', fontWeight: '600', cursor: 'pointer', fontSize: '14px', transition: 'all 0.2s' };
+const activeTabBtn = { ...tabBtn, backgroundColor: '#0F172A', color: 'white', fontWeight: '700', boxShadow: '0 4px 10px rgba(15,23,42,0.2)' };
 
-const tabContent = { backgroundColor: 'white', borderRadius: '24px', border: '1px solid #e2e8f0', padding: '32px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' };
-const sectionTitle = { fontSize: '20px', fontWeight: '900', color: '#0f172a', marginBottom: '4px' };
-const sectionSub = { fontSize: '13px', color: '#94a3b8', marginBottom: '28px' };
+const tabContent = { backgroundColor: '#D9E6F0', borderRadius: '24px', border: '1px solid #B0C4DE', padding: '32px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' };
+const sectionTitle = { fontSize: '20px', fontWeight: '900', color: '#0F172A', marginBottom: '4px' };
+const sectionSub = { fontSize: '13px', color: '#64748B', marginBottom: '28px' };
 
 const infoGrid = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' };
 const infoGroup = { display: 'flex', flexDirection: 'column', gap: '4px' };
-const infoLabel = { fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.8px' };
-const infoValue = { fontSize: '15px', fontWeight: '600', color: '#1e293b' };
+const infoLabel = { fontSize: '11px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.8px' };
+const infoValue = { fontSize: '15px', fontWeight: '700', color: '#0F172A' };
 
 const emptyState = { textAlign: 'center', padding: '40px' };
-const orderCard = { backgroundColor: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '20px', marginBottom: '16px' };
+const orderCard = { backgroundColor: '#EBF2F7', borderRadius: '16px', border: '1px solid #B0C4DE', padding: '20px', marginBottom: '16px' };
 const orderHeader = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' };
-const orderIdText = { fontSize: '15px', fontWeight: '800', color: '#0f172a', marginRight: '12px' };
-const orderDate = { fontSize: '12px', color: '#94a3b8', fontWeight: '600' };
+const orderIdText = { fontSize: '15px', fontWeight: '800', color: '#0F172A', marginRight: '12px' };
+const orderDate = { fontSize: '12px', color: '#64748B', fontWeight: '600' };
 const orderStatusBadge = { fontSize: '11px', fontWeight: '800', padding: '4px 12px', borderRadius: '20px' };
 const orderItems = { display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px' };
-const orderItemRow = { display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 12px', backgroundColor: 'white', borderRadius: '10px', border: '1px solid #f1f5f9' };
-const itemSku = { flex: 1, fontSize: '13px', fontWeight: '700', color: '#1e293b' };
-const itemQty = { fontSize: '12px', color: '#94a3b8', fontWeight: '600' };
-const itemPrice = { fontSize: '13px', fontWeight: '800', color: '#0f172a' };
+const orderItemRow = { display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 12px', backgroundColor: '#D9E6F0', borderRadius: '10px', border: '1px solid #B0C4DE' };
+const itemSku = { flex: 1, fontSize: '13px', fontWeight: '700', color: '#0F172A' };
+const itemQty = { fontSize: '12px', color: '#64748B', fontWeight: '600' };
+const itemPrice = { fontSize: '13px', fontWeight: '800', color: '#0F172A' };
 const orderFooter = { display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
-const orderRegion = { fontSize: '12px', color: '#64748b', fontWeight: '600' };
-const orderTotal = { fontSize: '18px', fontWeight: '900', color: '#4f46e5' };
+const orderRegion = { fontSize: '12px', color: '#334155', fontWeight: '600' };
+const orderTotal = { fontSize: '18px', fontWeight: '900', color: '#2563EB' };
 
 const reviewForm = { display: 'flex', flexDirection: 'column', gap: '20px' };
 const formGroup = { display: 'flex', flexDirection: 'column', gap: '8px' };
-const formLabel = { fontSize: '12px', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' };
-const formInput = { padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '14px', outline: 'none', backgroundColor: '#f8fafc' };
-const formTextarea = { padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '14px', outline: 'none', backgroundColor: '#f8fafc', resize: 'vertical' };
+const formLabel = { fontSize: '12px', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' };
+const formInput = { padding: '12px 16px', borderRadius: '12px', border: '1px solid #B0C4DE', fontSize: '14px', outline: 'none', backgroundColor: '#EBF2F7', color: '#0F172A' };
+const formTextarea = { padding: '12px 16px', borderRadius: '12px', border: '1px solid #B0C4DE', fontSize: '14px', outline: 'none', backgroundColor: '#EBF2F7', color: '#0F172A', resize: 'vertical' };
 const starRow = { display: 'flex', alignItems: 'center', gap: '4px' };
 const starIcon = { fontSize: '36px', cursor: 'pointer', transition: 'color 0.15s, transform 0.15s', lineHeight: 1 };
-const ratingText = { fontSize: '13px', color: '#64748b', fontWeight: '600', marginLeft: '8px' };
-const submitBtn = { padding: '14px 28px', background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: 'white', border: 'none', borderRadius: '12px', fontWeight: '800', fontSize: '15px', cursor: 'pointer', boxShadow: '0 6px 15px rgba(99,102,241,0.3)' };
-const disabledBtn = { ...submitBtn, background: '#cbd5e1', cursor: 'not-allowed', boxShadow: 'none' };
+const ratingText = { fontSize: '13px', color: '#64748B', fontWeight: '600', marginLeft: '8px' };
+const submitBtn = { padding: '14px 28px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: 'white', border: 'none', borderRadius: '12px', fontWeight: '800', fontSize: '15px', cursor: 'pointer', boxShadow: '0 6px 15px rgba(37,99,235,0.3)' };
+const disabledBtn = { ...submitBtn, background: '#94A3B8', cursor: 'not-allowed', boxShadow: 'none' };
 const successAlert = { backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', color: '#15803d', padding: '14px 20px', borderRadius: '12px', fontWeight: '700', fontSize: '14px' };
 
 const errorBox = { color: '#be123c', fontSize: '14px', fontWeight: '600', backgroundColor: '#fff1f2', padding: '16px 24px', borderRadius: '10px' };

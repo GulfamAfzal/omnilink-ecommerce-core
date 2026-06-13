@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" fill="none">
+  <rect width="200" height="200" rx="12" fill="#1F2937"/>
+  <rect x="1" y="1" width="198" height="198" rx="11" stroke="#374151" stroke-width="1"/>
+  <!-- Image frame icon -->
+  <rect x="60" y="55" width="80" height="65" rx="6" stroke="#4B5563" stroke-width="2" fill="none"/>
+  <!-- Mountain shapes inside frame -->
+  <path d="M68 108 L88 80 L104 97 L116 84 L132 108Z" fill="#374151"/>
+  <!-- Sun circle -->
+  <circle cx="118" cy="72" r="8" fill="#374151"/>
+  <!-- Label bar -->
+  <rect x="55" y="130" width="90" height="8" rx="4" fill="#374151"/>
+  <rect x="70" y="145" width="60" height="6" rx="3" fill="#2D3748"/>
+</svg>

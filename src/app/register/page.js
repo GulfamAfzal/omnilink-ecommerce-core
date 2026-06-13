@@ -88,6 +88,19 @@ export default function RegisterPage() {
               </div>
 
               <div style={group}>
+                <label style={labelS}>Region</label>
+                <select 
+                  style={inputS} 
+                  value={formData.regionId} 
+                  onChange={e => handleChange('regionId', e.target.value)}
+                >
+                  <option value="1">South Asia</option>
+                  <option value="2">North America</option>
+                  <option value="3">Europe</option>
+                </select>
+              </div>
+
+              <div style={group}>
                 <label style={labelS}>Password</label>
                 <input type="password" placeholder="••••••••••" style={inputS} onChange={e => handleChange('password', e.target.value)} required />
               </div>
@@ -135,7 +148,7 @@ export default function RegisterPage() {
 // --- SHARED UI DESIGN SYSTEM ---
 const pageWrapper = { 
   minHeight: '100vh', 
-  backgroundColor: '#f1f5f9', // Soft outer background
+  backgroundColor: 'transparent', // The global body gradient handles the main background
   display: 'flex', 
   justifyContent: 'center', 
   alignItems: 'center', 
@@ -144,9 +157,10 @@ const pageWrapper = {
 };
 
 const cardStyle = { 
-  backgroundColor: 'white', 
+  backgroundColor: '#D9E6F0', // Refined light pastel-sky blue
+  border: '1px solid #B0C4DE', // Cerulean blue border
   borderRadius: '24px', 
-  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)', 
+  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.05)', 
   width: '100%', 
   maxWidth: '1100px', 
   display: 'flex',
@@ -163,7 +177,7 @@ const formSideStyle = {
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: 'white'
+  backgroundColor: '#D9E6F0'
 };
 
 const formContainer = {
@@ -174,19 +188,20 @@ const formContainer = {
 const headerArea = { textAlign: 'center', marginBottom: '40px' };
 const logoWrapper = { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' };
 const logoImage = { height: '28px', width: 'auto' };
-const logoTextStyle = { fontSize: '22px', letterSpacing: '0.5px', color: '#0f172a', margin: '0', fontWeight: '800' };
+const logoTextStyle = { fontSize: '22px', letterSpacing: '0.5px', color: '#0F172A', margin: '0', fontWeight: '800' };
 
 const formStyle = { display: 'flex', flexDirection: 'column', gap: '20px' };
 const group = { display: 'flex', flexDirection: 'column', gap: '6px' };
-const labelS = { fontSize: '13px', fontWeight: '600', color: '#64748b' };
+const labelS = { fontSize: '13px', fontWeight: '700', color: '#0F172A' };
 
 const inputS = { 
   padding: '12px 16px', 
   borderRadius: '8px', 
-  border: '1px solid #e2e8f0', 
+  border: '1px solid #B0C4DE', 
   fontSize: '14px', 
   outline: 'none', 
-  backgroundColor: '#ffffff',
+  backgroundColor: '#EBF2F7',
+  color: '#0F172A',
   transition: 'border-color 0.2s',
   width: '100%',
   boxSizing: 'border-box'
@@ -195,40 +210,41 @@ const inputS = {
 const submitBtn = { 
   marginTop: '10px', 
   padding: '14px', 
-  backgroundColor: '#1e293b', 
+  background: 'linear-gradient(to right, #2563EB, #1D4ED8)', 
   color: 'white', 
   border: 'none', 
   borderRadius: '8px', 
   cursor: 'pointer', 
-  fontWeight: '600', 
+  fontWeight: '700', 
   fontSize: '15px',
-  transition: 'background-color 0.2s',
+  transition: 'background-color 0.2s, opacity 0.2s',
   width: '100%'
 };
 
-const disabledBtn = { ...submitBtn, backgroundColor: '#94a3b8', cursor: 'not-allowed' };
+const disabledBtn = { ...submitBtn, background: '#94A3B8', cursor: 'not-allowed' };
 
 const divider = { display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '30px 0', position: 'relative' };
-const dividerText = { backgroundColor: 'white', padding: '0 15px', color: '#94a3b8', fontSize: '13px', zIndex: 1 };
+const dividerText = { backgroundColor: '#D9E6F0', padding: '0 15px', color: '#64748B', fontSize: '13px', zIndex: 1 };
 
 const errorBox = { 
-  textAlign: 'center', marginTop: '20px', color: '#be123c', fontSize: '13px', fontWeight: '600', backgroundColor: '#fff1f2', padding: '12px', borderRadius: '8px' 
+  textAlign: 'center', marginTop: '20px', color: '#be123c', fontSize: '13px', fontWeight: '600', backgroundColor: '#fff1f2', padding: '12px', borderRadius: '8px', border: '1px solid #fecdd3'
 };
 
 const footerArea = { textAlign: 'center', marginTop: '10px' };
-const footerText = { fontSize: '13px', color: '#64748b' };
-const linkAction = { color: '#10b981', fontWeight: '600', textDecoration: 'none' };
+const footerText = { fontSize: '13px', color: '#334155' };
+const linkAction = { color: '#2563EB', fontWeight: '700', textDecoration: 'none' };
 
 // GRAPHIC SIDE (RIGHT)
 const graphicSideStyle = {
   width: '50%',
-  backgroundColor: '#e0e7ff', // Soft indigo matching system colors
+  backgroundColor: '#D0E1FD', // Architectural light steel blue
   padding: '60px',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
-  textAlign: 'center'
+  textAlign: 'center',
+  borderLeft: '1px solid #B0C4DE'
 };
 
 const graphicContent = {
@@ -250,12 +266,12 @@ const illustrationBox = {
   alignItems: 'center'
 };
 
-const circleDecor = { width: '80px', height: '80px', borderRadius: '50%', border: '4px solid #6366f1', position: 'absolute', top: '20px', left: '20px', opacity: 0.5 };
-const squareDecor = { width: '60px', height: '60px', borderRadius: '12px', backgroundColor: '#10b981', position: 'absolute', bottom: '30px', right: '40px', opacity: 0.5 };
+const circleDecor = { width: '80px', height: '80px', borderRadius: '50%', border: '4px solid #2563EB', position: 'absolute', top: '20px', left: '20px', opacity: 0.5 };
+const squareDecor = { width: '60px', height: '60px', borderRadius: '12px', backgroundColor: '#1D4ED8', position: 'absolute', bottom: '30px', right: '40px', opacity: 0.5 };
 
-const graphicTitle = { fontSize: '28px', fontWeight: '800', color: '#1e293b', margin: '0 0 16px 0' };
-const graphicSub = { fontSize: '15px', color: '#475569', lineHeight: '1.6', margin: '0 0 30px 0' };
+const graphicTitle = { fontSize: '28px', fontWeight: '800', color: '#0F172A', margin: '0 0 16px 0' };
+const graphicSub = { fontSize: '15px', color: '#334155', lineHeight: '1.6', margin: '0 0 30px 0' };
 
 const dotsContainer = { display: 'flex', gap: '8px' };
-const dotActive = { width: '24px', height: '8px', borderRadius: '4px', backgroundColor: '#6366f1' };
-const dot = { width: '8px', height: '8px', borderRadius: '4px', backgroundColor: '#cbd5e1' };
+const dotActive = { width: '24px', height: '8px', borderRadius: '4px', backgroundColor: '#2563EB' };
+const dot = { width: '8px', height: '8px', borderRadius: '4px', backgroundColor: '#B0C4DE' };

@@ -2,13 +2,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Package, DollarSign, Clock, CheckCircle, Inbox } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { id: 'orders',    label: '📦 Orders Log',      href: '/admin/orders' },
-  { id: 'analytics', label: '📊 Analytics',        href: '/admin/analytics' },
-  { id: 'inventory', label: '🏭 Inventory',         href: '/admin/inventory' },
-  { id: 'logs',      label: '🔍 Audit Logs',        href: '/admin/logs' },
-  { id: 'data',      label: '⚙ Data Management',   href: '/admin/data' },
+  { id: 'orders',    label: 'Orders Log',      href: '/admin/orders' },
+  { id: 'analytics', label: 'Analytics',        href: '/admin/analytics' },
+  { id: 'inventory', label: 'Inventory',         href: '/admin/inventory' },
+  { id: 'logs',      label: 'Audit Logs',        href: '/admin/logs' },
+  { id: 'data',      label: 'Data Management',   href: '/admin/data' },
 ];
 
 export default function AdminOrdersPage() {
@@ -58,15 +59,15 @@ export default function AdminOrdersPage() {
         {/* Stats */}
         <div style={statsGrid}>
           {[
-            { label: 'Total Orders', value: orders.length, icon: '📦', color: '#6366f1' },
-            { label: 'Total Revenue', value: `$${totalRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: '💰', color: '#10b981' },
-            { label: 'Pending', value: pending, icon: '⏳', color: '#f59e0b' },
-            { label: 'System Status', value: 'Operational', icon: '✅', color: '#10b981' },
+            { label: 'Total Orders', value: orders.length, icon: <Package size={22} color="#0284C7" />, color: '#0284C7', bg: '#E0F2FE' },
+            { label: 'Total Revenue', value: `$${totalRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: <DollarSign size={22} color="#15803D" />, color: '#15803D', bg: '#DCFCE7' },
+            { label: 'Pending', value: pending, icon: <Clock size={22} color="#B45309" />, color: '#B45309', bg: '#FEF3C7' },
+            { label: 'System Status', value: 'Operational', icon: <CheckCircle size={22} color="#047857" />, color: '#047857', bg: '#D1FAE5' },
           ].map((s, i) => (
-            <div key={i} style={statCard}>
-              <div style={statIcon}>{s.icon}</div>
+            <div key={i} style={{ ...statCard, backgroundColor: s.bg, borderColor: s.bg }}>
+              <div style={{ ...statIcon, backgroundColor: 'rgba(255,255,255,0.6)' }}>{s.icon}</div>
               <div>
-                <div style={{ ...statLabel }}>{s.label}</div>
+                <div style={{ ...statLabel, color: s.color, opacity: 0.8 }}>{s.label}</div>
                 <div style={{ ...statValue, color: s.color }}>{s.value}</div>
               </div>
             </div>
@@ -94,7 +95,7 @@ export default function AdminOrdersPage() {
               <span style={{ marginTop: '12px', color: '#64748b', fontSize: '13px' }}>Synchronizing with distributed engines...</span>
             </div>
           ) : filtered.length === 0 ? (
-            <div style={loaderStyle}><div style={{ fontSize: '40px' }}>📭</div><p style={{ color: '#64748b', fontWeight: '600' }}>No orders found</p></div>
+            <div style={loaderStyle}><Inbox size={40} color="#94a3b8" /><p style={{ color: '#64748b', fontWeight: '600' }}>No orders found</p></div>
           ) : (
             <table style={tableStyle}>
               <thead>
@@ -167,7 +168,7 @@ export function AdminSidebar({ active }) {
 }
 
 // --- SHARED ADMIN STYLES ---
-export const containerStyle = { display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc', fontFamily: '"Inter", system-ui, sans-serif' };
+export const containerStyle = { display: 'flex', minHeight: '100vh', backgroundColor: '#EBF2F7', fontFamily: '"Inter", system-ui, sans-serif' };
 export const sidebarStyle = { width: '260px', backgroundColor: '#0f172a', color: 'white', padding: '28px 16px', display: 'flex', flexDirection: 'column', flexShrink: 0 };
 export const sidebarLogo = { fontSize: '22px', fontWeight: '900', marginBottom: '36px', letterSpacing: '-0.5px', padding: '0 8px' };
 export const navItem = { display: 'block', padding: '12px 14px', borderRadius: '10px', color: '#94a3b8', fontSize: '14px', fontWeight: '600', textDecoration: 'none', marginBottom: '4px', transition: 'all 0.2s' };
@@ -179,9 +180,9 @@ export const logoutBtn = { width: '100%', padding: '10px', background: 'rgba(255
 export const mainContentStyle = { flex: 1, padding: '36px 40px', overflowY: 'auto' };
 
 const headerStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' };
-const titleStyle = { margin: 0, fontSize: '28px', color: '#0f172a', fontWeight: '900', letterSpacing: '-0.5px' };
-const subtitleStyle = { margin: '6px 0 0', color: '#64748b', fontSize: '14px' };
-const refreshBtn = { padding: '10px 20px', backgroundColor: 'white', color: '#1e293b', border: '2px solid #e2e8f0', borderRadius: '10px', cursor: 'pointer', fontWeight: '700', fontSize: '13px' };
+const titleStyle = { margin: 0, fontSize: '28px', color: '#0F172A', fontWeight: '900', letterSpacing: '-0.5px' };
+const subtitleStyle = { margin: '6px 0 0', color: '#64748B', fontSize: '14px' };
+const refreshBtn = { padding: '10px 20px', backgroundColor: '#D9E6F0', color: '#0F172A', border: '1px solid #B0C4DE', borderRadius: '10px', cursor: 'pointer', fontWeight: '700', fontSize: '13px' };
 
 const statsGrid = { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '28px' };
 const statCard = { backgroundColor: 'white', padding: '20px 24px', borderRadius: '16px', border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' };
@@ -190,18 +191,18 @@ const statLabel = { fontSize: '11px', fontWeight: '700', color: '#94a3b8', textT
 const statValue = { fontSize: '24px', fontWeight: '900', marginTop: '2px' };
 
 const filterBar = { display: 'flex', gap: '12px', marginBottom: '20px' };
-const searchInput = { flex: 1, padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '14px', outline: 'none', backgroundColor: 'white' };
-const filterSelect = { padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '14px', backgroundColor: 'white', cursor: 'pointer' };
+const searchInput = { flex: 1, padding: '12px 16px', borderRadius: '12px', border: '1px solid #B0C4DE', fontSize: '14px', outline: 'none', backgroundColor: '#D9E6F0', color: '#0F172A' };
+const filterSelect = { padding: '12px 16px', borderRadius: '12px', border: '1px solid #B0C4DE', fontSize: '14px', backgroundColor: '#D9E6F0', color: '#0F172A', cursor: 'pointer' };
 
-const tableWrapper = { backgroundColor: 'white', borderRadius: '20px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' };
+const tableWrapper = { backgroundColor: '#D9E6F0', borderRadius: '20px', border: '1px solid #B0C4DE', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' };
 const loaderStyle = { padding: '60px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' };
 const spinner = { width: '36px', height: '36px', border: '3px solid #f1f5f9', borderTop: '3px solid #6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
-const tableHeaderRow = { backgroundColor: '#0f172a' };
-const thStyle = { padding: '14px 20px', textAlign: 'left', color: '#94a3b8', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' };
-const tdStyle = { padding: '16px 20px', fontSize: '14px', color: '#1e293b', borderBottom: '1px solid #f8fafc', verticalAlign: 'top' };
-const trEven = { backgroundColor: 'white' };
-const trOdd = { backgroundColor: '#fafbfc' };
+const tableHeaderRow = { backgroundColor: '#1E293B' };
+const thStyle = { padding: '14px 20px', textAlign: 'left', color: '#94A3B8', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' };
+const tdStyle = { padding: '16px 20px', fontSize: '14px', color: '#0F172A', borderBottom: '1px solid #B0C4DE', verticalAlign: 'top' };
+const trEven = { backgroundColor: '#EBF2F7' };
+const trOdd = { backgroundColor: '#D9E6F0' };
 const orderIdBadge = { fontWeight: '800', color: '#6366f1', fontFamily: 'monospace', fontSize: '13px' };
 const customerName = { fontWeight: '700' };
 const itemsCol = { display: 'flex', flexDirection: 'column', gap: '8px' };

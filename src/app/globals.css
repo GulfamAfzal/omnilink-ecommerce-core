@@ -1,29 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
+/* ============================================
+   GLOW ARCHITECTURE — DESIGN TOKEN SYSTEM
+   ============================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Color Palette */
+  /* Nav bar stays dark — set directly in ClientHeader */
+  --nav-bg:        #111827;
+
+  /* Page / content layer — Light Ice Blue */
+  --bg-master:     #EBF2F7;
+  --bg-gradient:   linear-gradient(160deg, #E6F0F6 0%, #F4F8FA 100%);
+  --bg-container:  #D9E6F0;
+  --bg-container2: #D0E1FD;
+  --bg-border:     #B0C4DE;
+  --bg-surface:    #E2E8F0;
+
+  --text-primary:  #0F172A;
+  --text-secondary:#334155;
+  --text-muted:    #64748B;
+
+  --accent-cyan:   #06B6D4;
+  --accent-hover:  #0891B2;
+  --accent-glow:   rgba(6, 182, 212, 0.15);
+
+  --success:       #10B981;
+  --error:         #EF4444;
+  --warning:       #F59E0B;
+
+  /* Spacing */
+  --container-pad: 1.5rem;
+  --card-pad:      1.25rem;
+
+  /* Border radius */
+  --radius-sm:     4px;
+  --radius-md:     8px;
+  --radius-lg:     16px;
+  --radius-xl:     24px;
+
+  /* Typography */
+  --font-sans:     'Inter', system-ui, -apple-system, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ============================================
+   BASE RESET
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html, body {
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* ============================================
+   TYPOGRAPHY SCALE
+   ============================================ */
+h1 { font-size: 1.75rem;  font-weight: 800; line-height: 1.2; }
+h2 { font-size: 1.375rem; font-weight: 700; line-height: 1.3; }
+h3 { font-size: 1.125rem; font-weight: 700; line-height: 1.4; }
+h4 { font-size: 1rem;     font-weight: 600; }
+h5 { font-size: 0.875rem; font-weight: 600; }
+h6 { font-size: 0.75rem;  font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+p, span, li { font-size: 0.875rem; }
+
+small, .text-xs { font-size: 0.75rem; }
+
+/* ============================================
+   STANDARD BUTTON TOKENS
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  font-family: var(--font-sans);
+}
+
+.btn-primary {
+  background-color: #2563EB;
+  color: #fff;
+}
+.btn-primary:hover {
+  background-color: #1D4ED8;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--bg-border);
+  color: var(--text-secondary);
+}
+.btn-ghost:hover {
+  border-color: var(--accent-cyan);
+  color: var(--text-primary);
+}
+
+.btn-danger {
+  background-color: var(--error);
+  color: white;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+button:not(:disabled):active { transform: scale(0.97); }
 
 /* ============================================
    KEYFRAME ANIMATIONS
    ============================================ */
 @keyframes spin {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes pulse {
@@ -33,17 +138,22 @@ body {
 
 @keyframes slideInRight {
   from { transform: translateX(40px); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(0);    opacity: 1; }
 }
 
 @keyframes slideInLeft {
   from { transform: translateX(-40px); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(0);     opacity: 1; }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
+  50%       { box-shadow: 0 0 12px 3px rgba(6, 182, 212, 0.25); }
 }
 
 @keyframes stepSuccess {
@@ -53,58 +163,137 @@ body {
 }
 
 /* ============================================
+   SPINNER UTILITY
+   ============================================ */
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top-color: var(--accent-cyan);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+.spinner-lg {
+  width: 40px; height: 40px;
+  border-width: 3px;
+}
+
+/* ============================================
+   CARD / CONTAINER UTILITIES
+   ============================================ */
+.card {
+  background-color: var(--bg-container);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--bg-border);
+  border-radius: var(--radius-lg);
+  padding: var(--container-pad);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* Use separate borderColor (not shorthand border) to avoid React rerender conflict */
+.card-hover {
+  transition: border-color 0.2s, transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s;
+}
+.card-hover:hover {
+  border-color: #06B6D4 !important;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.10);
+}
+
+/* ============================================
+   FORM INPUTS
+   ============================================ */
+.input-dark {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  background-color: #EBF2F7;
+  border: 1px solid #B0C4DE;
+  border-radius: 6px;
+  color: #0F172A;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-dark:focus {
+  border-color: #2563EB;
+}
+.input-dark::placeholder {
+  color: #94A3B8;
+}
+
+/* ============================================
+   BADGE UTILITIES
+   ============================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.badge-cyan   { background: rgba(6,182,212,0.15);  color: var(--accent-cyan); }
+.badge-green  { background: rgba(16,185,129,0.15); color: var(--success); }
+.badge-red    { background: rgba(239,68,68,0.15);  color: var(--error); }
+.badge-yellow { background: rgba(245,158,11,0.15); color: var(--warning); }
+
+/* ============================================
    RESPONSIVE GRID BREAKPOINTS
    ============================================ */
 @media (max-width: 1200px) {
   .product-grid { grid-template-columns: repeat(3, 1fr) !important; }
 }
-
 @media (max-width: 900px) {
   .product-grid  { grid-template-columns: repeat(2, 1fr) !important; }
   .page-layout   { flex-direction: column !important; }
   .filter-sidebar { width: 100% !important; position: static !important; }
 }
-
 @media (max-width: 560px) {
   .product-grid { grid-template-columns: 1fr !important; }
 }
 
 /* ============================================
-   CART DRAWER TRANSITION UTILITIES
+   CART DRAWER
    ============================================ */
 .cart-drawer-open {
   transform: translateX(0) !important;
 }
 
 /* ============================================
-   SCROLLBAR STYLING
+   SCROLLBAR
    ============================================ */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f8fafc; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #EDF2F7; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 
 /* ============================================
-   INTERACTIVE ELEMENT MICRO-ANIMATIONS
+   MICRO-ANIMATIONS
    ============================================ */
-button:active { transform: scale(0.97); }
-
-/* Star rating hover */
 .star-hover { transition: color 0.15s, transform 0.15s; }
 .star-hover:hover { transform: scale(1.2); }
 
-/* Sidebar nav active item indicator */
 .nav-active-dot {
   display: inline-block;
-  width: 6px;
-  height: 6px;
-  background-color: #6366f1;
+  width: 6px; height: 6px;
+  background-color: var(--accent-cyan);
   border-radius: 50%;
   margin-left: auto;
   animation: pulse 2s ease-in-out infinite;
 }
 
-/* Log entry hover */
-.log-entry:hover {
-  background-color: #f8fafc;
+/* ============================================
+   SELECTION COLOR
+   ============================================ */
+::selection {
+  background: rgba(37, 99, 235, 0.15);
+  color: var(--text-primary);
 }
+
+/* ============================================
+   LINK DEFAULT
+   ============================================ */
+a { color: var(--accent-cyan); text-decoration: none; }
+a:hover { color: var(--accent-hover); }

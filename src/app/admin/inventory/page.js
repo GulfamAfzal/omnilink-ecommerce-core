@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminSidebar, containerStyle, mainContentStyle } from '../orders/page';
+import { AlertTriangle, CheckCircle, Package, Inbox } from 'lucide-react';
 
 export default function AdminInventoryPage() {
   const router = useRouter();
@@ -51,7 +52,7 @@ export default function AdminInventoryPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setSuccess(`✓ Stock updated! New balance: ${data.newQuantity}`);
+        setSuccess(`Stock updated! New balance: ${data.newQuantity}`);
         setForm(f => ({ ...f, variantId: '', quantityChange: '', reason: '' }));
         fetchInventory(regionFilter);
       } else {
@@ -77,7 +78,8 @@ export default function AdminInventoryPage() {
           </div>
           {lowStockCount > 0 && (
             <div style={lowStockAlert}>
-              ⚠ {lowStockCount} item{lowStockCount > 1 ? 's' : ''} low on stock
+              <AlertTriangle size={14} style={{ marginRight: '6px' }} />
+              {lowStockCount} item{lowStockCount > 1 ? 's' : ''} low on stock
             </div>
           )}
         </header>
@@ -104,8 +106,8 @@ export default function AdminInventoryPage() {
               <div style={loaderDiv}><div style={spinner} /></div>
             ) : inventory.length === 0 ? (
               <div style={emptyDiv}>
-                <div style={{ fontSize: '40px', marginBottom: '12px' }}>📦</div>
-                <p style={{ fontWeight: '700', color: '#475569' }}>No inventory records found</p>
+                <div style={{ marginBottom: '12px' }}><Package size={40} color="#94A3B8" /></div>
+                <p style={{ fontWeight: '700', color: '#334155' }}>No inventory records found</p>
                 <p style={{ fontSize: '13px', color: '#94a3b8' }}>Use the form to add stock entries for a variant.</p>
               </div>
             ) : (
@@ -133,8 +135,8 @@ export default function AdminInventoryPage() {
                       </td>
                       <td style={tdStyle}>
                         {item.lowStock
-                          ? <span style={lowBadge}>⚠ Low Stock</span>
-                          : <span style={okBadge}>✓ In Stock</span>}
+                          ? <span style={lowBadge}><AlertTriangle size={12} style={{ marginRight: '4px' }} /> Low Stock</span>
+                          : <span style={okBadge}><CheckCircle size={12} style={{ marginRight: '4px' }} /> In Stock</span>}
                       </td>
                       <td style={{ ...tdStyle, fontSize: '12px', color: '#94a3b8' }}>
                         {item.updated_at ? new Date(item.updated_at).toLocaleDateString() : '—'}
@@ -151,8 +153,8 @@ export default function AdminInventoryPage() {
             <div style={sectionTitle}>Stock Adjustment</div>
             <p style={formSub}>Updates routed directly to shard node via <code style={{ color: '#10b981', fontSize: '11px' }}>region_id</code> key</p>
 
-            {success && <div style={successAlert}>{success}</div>}
-            {error && <div style={errorAlert}>⚠ {error}</div>}
+            {success && <div style={successAlert}><CheckCircle size={14} style={{ marginRight: '6px' }} /> {success}</div>}
+            {error && <div style={errorAlert}><AlertTriangle size={14} style={{ marginRight: '6px' }} /> {error}</div>}
 
             <form onSubmit={handleSubmit} style={formStyle}>
               {[
@@ -223,41 +225,41 @@ export default function AdminInventoryPage() {
 const headerStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' };
 const titleStyle = { margin: 0, fontSize: '28px', color: '#0f172a', fontWeight: '900', letterSpacing: '-0.5px' };
 const subtitleStyle = { margin: '6px 0 0', color: '#64748b', fontSize: '14px' };
-const lowStockAlert = { backgroundColor: '#fef9c3', border: '1px solid #fde047', color: '#854d0e', padding: '12px 20px', borderRadius: '12px', fontWeight: '700', fontSize: '13px' };
+const lowStockAlert = { backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', color: '#B45309', padding: '12px 20px', borderRadius: '12px', fontWeight: '700', fontSize: '13px', display: 'flex', alignItems: 'center' };
 
 const pageGrid = { display: 'grid', gridTemplateColumns: '1fr 360px', gap: '28px', alignItems: 'flex-start' };
 
-const tableSection = { backgroundColor: 'white', borderRadius: '20px', border: '1px solid #e2e8f0', overflow: 'hidden' };
-const sectionHeader = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px', borderBottom: '1px solid #f1f5f9' };
-const sectionTitle = { fontSize: '16px', fontWeight: '800', color: '#0f172a' };
+const tableSection = { backgroundColor: '#EBF2F7', borderRadius: '20px', border: '1px solid #B0C4DE', overflow: 'hidden' };
+const sectionHeader = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px', borderBottom: '1px solid #B0C4DE' };
+const sectionTitle = { fontSize: '16px', fontWeight: '800', color: '#0F172A' };
 const filterRow = { display: 'flex', gap: '8px' };
-const filterSelect = { padding: '8px 12px', borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '13px', backgroundColor: '#f8fafc', cursor: 'pointer' };
-const refreshBtn = { padding: '8px 12px', backgroundColor: '#f1f5f9', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' };
+const filterSelect = { padding: '8px 12px', borderRadius: '10px', border: '1px solid #B0C4DE', fontSize: '13px', backgroundColor: '#D9E6F0', cursor: 'pointer', color: '#0F172A' };
+const refreshBtn = { padding: '8px 12px', backgroundColor: '#D9E6F0', border: '1px solid #B0C4DE', borderRadius: '10px', cursor: 'pointer', fontWeight: '700', fontSize: '15px', color: '#0F172A' };
 const loaderDiv = { display: 'flex', justifyContent: 'center', padding: '40px' };
-const emptyDiv = { textAlign: 'center', padding: '48px', color: '#64748b' };
-const spinner = { width: '32px', height: '32px', border: '3px solid #f1f5f9', borderTop: '3px solid #6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite' };
+const emptyDiv = { textAlign: 'center', padding: '48px', color: '#64748B' };
+const spinner = { width: '32px', height: '32px', border: '3px solid #D9E6F0', borderTop: '3px solid #2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
-const tableHead = { backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0' };
-const thStyle = { padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' };
-const tdStyle = { padding: '14px 20px', fontSize: '13px', color: '#1e293b', borderBottom: '1px solid #f8fafc' };
-const trEven = { backgroundColor: 'white' };
-const trOdd = { backgroundColor: '#fafbfc' };
-const skuText = { fontWeight: '800', color: '#0f172a', fontSize: '13px' };
-const variantId = { fontFamily: 'monospace', fontSize: '11px', color: '#94a3b8', marginTop: '2px' };
-const regionBadge = { backgroundColor: '#e0e7ff', color: '#4f46e5', padding: '3px 10px', borderRadius: '20px', fontWeight: '700', fontSize: '11px' };
-const lowBadge = { backgroundColor: '#fef2f2', color: '#dc2626', padding: '3px 10px', borderRadius: '20px', fontWeight: '700', fontSize: '11px' };
-const okBadge = { backgroundColor: '#f0fdf4', color: '#16a34a', padding: '3px 10px', borderRadius: '20px', fontWeight: '700', fontSize: '11px' };
+const tableHead = { backgroundColor: '#D9E6F0', borderBottom: '2px solid #B0C4DE' };
+const thStyle = { padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' };
+const tdStyle = { padding: '14px 20px', fontSize: '13px', color: '#0F172A', borderBottom: '1px solid #B0C4DE' };
+const trEven = { backgroundColor: '#EBF2F7' };
+const trOdd = { backgroundColor: '#D9E6F0' };
+const skuText = { fontWeight: '800', color: '#0F172A', fontSize: '13px' };
+const variantId = { fontFamily: 'monospace', fontSize: '11px', color: '#64748B', marginTop: '2px' };
+const regionBadge = { backgroundColor: '#E0F2FE', color: '#0284C7', padding: '3px 10px', borderRadius: '20px', fontWeight: '700', fontSize: '11px', border: '1px solid #B0C4DE' };
+const lowBadge = { backgroundColor: '#FEF2F2', color: '#DC2626', padding: '3px 10px', borderRadius: '20px', fontWeight: '700', fontSize: '11px', display: 'inline-flex', alignItems: 'center' };
+const okBadge = { backgroundColor: '#DCFCE7', color: '#15803D', padding: '3px 10px', borderRadius: '20px', fontWeight: '700', fontSize: '11px', display: 'inline-flex', alignItems: 'center' };
 
-const formPanel = { backgroundColor: 'white', borderRadius: '20px', border: '1px solid #e2e8f0', padding: '28px' };
+const formPanel = { backgroundColor: '#EBF2F7', borderRadius: '20px', border: '1px solid #B0C4DE', padding: '28px' };
 const formSub = { fontSize: '12px', color: '#94a3b8', marginBottom: '24px' };
 const successAlert = { backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', color: '#15803d', padding: '12px', borderRadius: '10px', fontWeight: '700', fontSize: '13px', marginBottom: '16px' };
 const errorAlert = { backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '12px', borderRadius: '10px', fontWeight: '700', fontSize: '13px', marginBottom: '16px' };
 const formStyle = { display: 'flex', flexDirection: 'column', gap: '16px' };
 const formGroup = { display: 'flex', flexDirection: 'column', gap: '6px' };
-const formLabel = { fontSize: '11px', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' };
-const formInput = { padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '14px', outline: 'none', backgroundColor: '#f8fafc' };
+const formLabel = { fontSize: '11px', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' };
+const formInput = { padding: '10px 14px', borderRadius: '10px', border: '1px solid #B0C4DE', fontSize: '14px', outline: 'none', backgroundColor: '#D9E6F0', color: '#0F172A' };
 const deltaRow = { display: 'flex', gap: '8px', alignItems: 'center' };
 const deltaBtn = (color) => ({ padding: '10px 12px', borderRadius: '10px', border: 'none', backgroundColor: color === 'red' ? '#fef2f2' : '#f0fdf4', color: color === 'red' ? '#dc2626' : '#16a34a', fontWeight: '800', fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap' });
 const deltaHint = { fontSize: '11px', color: '#94a3b8', margin: 0 };
-const submitBtn = { width: '100%', padding: '14px', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: 'white', border: 'none', borderRadius: '12px', fontWeight: '800', fontSize: '15px', cursor: 'pointer', boxShadow: '0 6px 15px rgba(15,23,42,0.25)' };
-const disabledBtn = { ...submitBtn, background: '#cbd5e1', cursor: 'not-allowed', boxShadow: 'none' };
+const submitBtn = { width: '100%', padding: '14px', background: 'linear-gradient(to right, #2563EB, #1D4ED8)', color: 'white', border: 'none', borderRadius: '12px', fontWeight: '800', fontSize: '15px', cursor: 'pointer', boxShadow: '0 6px 15px rgba(37,99,235,0.25)' };
+const disabledBtn = { ...submitBtn, background: '#94A3B8', cursor: 'not-allowed', boxShadow: 'none' };

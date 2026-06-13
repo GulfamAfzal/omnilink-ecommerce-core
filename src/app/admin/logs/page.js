@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminSidebar, containerStyle, mainContentStyle } from '../orders/page';
+import { FileText, AlertOctagon, AlertTriangle, CheckCircle, Inbox } from 'lucide-react';
 
 const SEVERITY_CONFIG = {
   INFO:     { bg: '#eff6ff', color: '#1d4ed8', dot: '#3b82f6', label: 'INFO' },
@@ -63,15 +64,17 @@ export default function AdminLogsPage() {
         {/* Summary Cards */}
         <div style={summaryGrid}>
           {[
-            { label: 'Total Logs', value: logs.length, icon: '📋', color: '#6366f1' },
-            { label: 'Critical', value: summary.critical, icon: '🚨', color: '#dc2626' },
-            { label: 'Warnings', value: summary.warn, icon: '⚠️', color: '#f59e0b' },
-            { label: 'Info', value: summary.info, icon: '✅', color: '#10b981' },
+            { label: 'Total Logs', value: logs.length, icon: <FileText size={24} color="#0284C7" />, color: '#0284C7', bg: '#E0F2FE' },
+            { label: 'Critical', value: summary.critical, icon: <AlertOctagon size={24} color="#DC2626" />, color: '#DC2626', bg: '#FEF2F2' },
+            { label: 'Warnings', value: summary.warn, icon: <AlertTriangle size={24} color="#B45309" />, color: '#B45309', bg: '#FEF3C7' },
+            { label: 'Info', value: summary.info, icon: <CheckCircle size={24} color="#15803D" />, color: '#15803D', bg: '#DCFCE7' },
           ].map((s, i) => (
-            <div key={i} style={summaryCard}>
+            <div key={i} style={{ ...summaryCard, backgroundColor: s.bg, borderColor: s.color + '40' }}>
               <div style={summaryIcon}>{s.icon}</div>
-              <div style={summaryLabel}>{s.label}</div>
-              <div style={{ ...summaryValue, color: s.color }}>{s.value}</div>
+              <div>
+                <div style={summaryLabel}>{s.label}</div>
+                <div style={{ ...summaryValue, color: s.color }}>{s.value}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -112,9 +115,9 @@ export default function AdminLogsPage() {
             <div style={loaderDiv}><div style={spinner} /><p style={{ color: '#64748b', marginTop: '12px', fontWeight: '600' }}>Reading log streams...</p></div>
           ) : filtered.length === 0 ? (
             <div style={loaderDiv}>
-              <div style={{ fontSize: '40px', marginBottom: '12px' }}>📭</div>
-              <p style={{ fontWeight: '700', color: '#475569' }}>No log entries found</p>
-              <p style={{ fontSize: '13px', color: '#94a3b8' }}>Logs appear here as operations are performed across the system.</p>
+              <div style={{ marginBottom: '12px' }}><Inbox size={40} color="#94A3B8" /></div>
+              <p style={{ fontWeight: '700', color: '#334155' }}>No log entries found</p>
+              <p style={{ fontSize: '13px', color: '#64748B' }}>Logs appear here as operations are performed across the system.</p>
             </div>
           ) : (
             <div style={logList}>
@@ -158,25 +161,25 @@ const subtitleStyle = { margin: '6px 0 0', color: '#64748b', fontSize: '14px' };
 const refreshBtn = { padding: '10px 20px', backgroundColor: 'white', color: '#1e293b', border: '2px solid #e2e8f0', borderRadius: '10px', cursor: 'pointer', fontWeight: '700', fontSize: '13px' };
 
 const summaryGrid = { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' };
-const summaryCard = { backgroundColor: 'white', padding: '20px', borderRadius: '16px', border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '14px' };
-const summaryIcon = { fontSize: '24px' };
-const summaryLabel = { fontSize: '11px', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' };
+const summaryCard = { backgroundColor: '#EBF2F7', padding: '20px', borderRadius: '16px', border: '1px solid #B0C4DE', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 10px rgba(0,0,0,0.02)' };
+const summaryIcon = { display: 'flex' };
+const summaryLabel = { fontSize: '11px', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' };
 const summaryValue = { fontSize: '26px', fontWeight: '900' };
 
-const dbStreamRow = { display: 'flex', gap: '24px', marginBottom: '20px', padding: '16px 20px', backgroundColor: 'white', borderRadius: '14px', border: '1px solid #f1f5f9' };
-const dbStream = { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '700', color: '#475569' };
+const dbStreamRow = { display: 'flex', gap: '24px', marginBottom: '20px', padding: '16px 20px', backgroundColor: '#EBF2F7', borderRadius: '14px', border: '1px solid #B0C4DE' };
+const dbStream = { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '700', color: '#0F172A' };
 const streamDot = { width: '10px', height: '10px', borderRadius: '50%', animation: 'pulse 2s ease-in-out infinite' };
-const streamCount = { backgroundColor: '#f1f5f9', color: '#64748b', padding: '2px 8px', borderRadius: '10px', fontSize: '12px', marginLeft: '4px' };
+const streamCount = { backgroundColor: '#D9E6F0', color: '#0F172A', padding: '2px 8px', borderRadius: '10px', fontSize: '12px', marginLeft: '4px' };
 
 const filterBar = { display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' };
-const filterSelect = { padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '13px', backgroundColor: 'white', cursor: 'pointer' };
-const filterCount = { marginLeft: 'auto', fontSize: '13px', color: '#64748b', fontWeight: '700' };
+const filterSelect = { padding: '10px 14px', borderRadius: '10px', border: '1px solid #B0C4DE', fontSize: '13px', backgroundColor: '#D9E6F0', color: '#0F172A', cursor: 'pointer' };
+const filterCount = { marginLeft: 'auto', fontSize: '13px', color: '#334155', fontWeight: '700' };
 
-const logPanel = { backgroundColor: 'white', borderRadius: '20px', border: '1px solid #e2e8f0', overflow: 'hidden' };
-const loaderDiv = { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px', color: '#64748b' };
-const spinner = { width: '32px', height: '32px', border: '3px solid #f1f5f9', borderTop: '3px solid #6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite' };
+const logPanel = { backgroundColor: '#EBF2F7', borderRadius: '20px', border: '1px solid #B0C4DE', overflow: 'hidden' };
+const loaderDiv = { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px', color: '#64748B' };
+const spinner = { width: '32px', height: '32px', border: '3px solid #D9E6F0', borderTop: '3px solid #2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite' };
 const logList = { display: 'flex', flexDirection: 'column' };
-const logEntry = { padding: '14px 20px', borderBottom: '1px solid #f8fafc', cursor: 'pointer', transition: 'background 0.15s' };
+const logEntry = { padding: '14px 20px', borderBottom: '1px solid #B0C4DE', cursor: 'pointer', transition: 'background 0.15s' };
 const logEntryHeader = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' };
 const logLeft = { display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' };
 const logRight = { display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 };
@@ -184,6 +187,6 @@ const sevBadge = { fontSize: '10px', fontWeight: '800', padding: '3px 8px', bord
 const streamBadge = { fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px', border: '1px solid' };
 const logType = { fontSize: '11px', color: '#94a3b8', fontFamily: 'monospace' };
 const logTime = { fontSize: '11px', color: '#94a3b8', fontWeight: '600' };
-const logMessage = { fontSize: '13px', color: '#1e293b', fontWeight: '500', lineHeight: '1.4' };
-const logDetail = { marginTop: '12px', backgroundColor: '#f8fafc', borderRadius: '10px', padding: '12px' };
-const detailPre = { margin: 0, fontSize: '12px', color: '#475569', fontFamily: 'monospace', lineHeight: '1.5', overflow: 'auto' };
+const logMessage = { fontSize: '13px', color: '#0F172A', fontWeight: '500', lineHeight: '1.4' };
+const logDetail = { marginTop: '12px', backgroundColor: '#D9E6F0', borderRadius: '10px', padding: '12px' };
+const detailPre = { margin: 0, fontSize: '12px', color: '#334155', fontFamily: 'monospace', lineHeight: '1.5', overflow: 'auto' };

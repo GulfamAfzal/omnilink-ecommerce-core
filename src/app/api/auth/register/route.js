@@ -11,13 +11,14 @@ export async function POST(request) {
 
     pool = await getSqlConnection();
 
-    // --- 1. ENFORCE GLOBAL ADMIN CONSTRAINT (Business Logic in Application Layer) ---
+    // --- 1. ENFORCE GLOBAL ADMIN CONSTRAINT ---
     if (userType === 'Admin') {
       const adminCheck = await pool.request()
         .query(`SELECT COUNT(*) as count FROM USERS WHERE user_type = 'Admin'`);
-      
       if (adminCheck.recordset[0].count >= 2) {
-        return NextResponse.json({ error: "Constraint Violated: System already has 2 Global Admins." }, { status: 403 });
+        return NextResponse.json({
+          error: "The maximum number of administrators has been reached. Contact your system owner."
+        }, { status: 403 });
       }
     }
 
@@ -26,21 +27,40 @@ export async function POST(request) {
       const managerCheck = await pool.request()
         .input('regionId', sql.Int, regionId)
         .query(`SELECT COUNT(*) as count FROM USERS WHERE user_type = 'Manager' AND region_id = @regionId`);
-      
       if (managerCheck.recordset[0].count >= 3) {
-        return NextResponse.json({ error: `Constraint Violated: Region ${regionId} already has 3 Managers.` }, { status: 403 });
+        return NextResponse.json({
+          error: `This region already has the maximum number of managers. Please contact your administrator.`
+        }, { status: 403 });
       }
     }
 
-    // --- 3. PROCEED WITH REGISTRATION ---
+    // --- 3. CHECK FOR DUPLICATE EMAIL/USERNAME ---
+    const dupCheck = await pool.request()
+      .input('email', sql.NVarChar, email)
+      .input('username', sql.NVarChar, username)
+      .query(`SELECT email, username FROM USERS WHERE email = @email OR username = @username`);
+
+    if (dupCheck.recordset.length > 0) {
+      const dup = dupCheck.recordset[0];
+      if (dup.email === email) {
+        return NextResponse.json({
+          error: "An account with this email address already exists. Please log in or use a different email."
+        }, { status: 409 });
+      }
+      if (dup.username === username) {
+        return NextResponse.json({
+          error: "This username is already taken. Please choose a different username."
+        }, { status: 409 });
+      }
+    }
+
+    // --- 4. PROCEED WITH REGISTRATION ---
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Map UserType to RoleID (Matching your ROLES table data: 1:Super_Admin, 2:Manager, 4:Customer)
     const roleMap = { 'Customer': 4, 'Admin': 1, 'Manager': 2 };
     const roleId = roleMap[userType] || 4;
 
-    // T-SQL Insert: Note we don't need a sequence for user_id because we set it as IDENTITY in the DDL
     await pool.request()
       .input('username', sql.NVarChar, username)
       .input('email', sql.NVarChar, email)
@@ -53,25 +73,32 @@ export async function POST(request) {
       .input('regionId', sql.Int, regionId)
       .query(`
         INSERT INTO USERS (
-          username, email, password_hash, first_name, last_name, 
+          username, email, password_hash, first_name, last_name,
           contact_number, user_type, role_id, region_id
         ) VALUES (
-          @username, @email, @password, @fname, @lname, 
+          @username, @email, @password, @fname, @lname,
           @contact, @utype, @roleId, @regionId
         )
       `);
 
-    return NextResponse.json({ 
-      success: true, 
-      message: "Identity created successfully in Azure SQL Cloud." 
+    return NextResponse.json({
+      success: true,
+      message: "Your account has been created successfully. You can now log in."
     });
 
   } catch (error) {
     console.error("Registration Error:", error);
-    return NextResponse.json({ 
-      error: "Cloud Database Error", 
-      details: error.message 
+
+    // Handle SQL duplicate key constraint as fallback
+    if (error.message?.includes('Violation of UNIQUE') || error.message?.includes('duplicate key')) {
+      return NextResponse.json({
+        error: "An account with this email or username already exists. Please try logging in instead."
+      }, { status: 409 });
+    }
+
+    return NextResponse.json({
+      error: "Registration could not be completed. Please try again shortly.",
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     }, { status: 500 });
   }
-  // Connection pooling in 'mssql' handles closing; we don't need pool.close() here.
 }
