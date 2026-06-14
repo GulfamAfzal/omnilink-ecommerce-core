@@ -52,7 +52,35 @@ export async function GET(request) {
 
     const cartItems = await db.collection("Carts").aggregate(pipeline).toArray();
 
-    return NextResponse.json({ success: true, items: cartItems });
+    // Data Enhancement for missing/broken images to match homepage
+    const enhancedCartItems = cartItems.map(item => {
+      let image_url = item.image_url;
+      const lowerSku = (item.sku || "").toLowerCase();
+      
+      let matchedRealistic = false;
+      
+      if (lowerSku.includes("iphone")) {
+        image_url = "https://images.unsplash.com/photo-1695048133142-1a20484d2569?q=80&w=800&auto=format&fit=crop";
+        matchedRealistic = true;
+      } else if (lowerSku.includes("wh-1000xm5") || lowerSku.includes("sony")) {
+        image_url = "https://images.unsplash.com/photo-1618366712277-722626e1e5fb?q=80&w=800&auto=format&fit=crop";
+        matchedRealistic = true;
+      } else if (lowerSku.includes("macbook")) {
+        image_url = "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800&auto=format&fit=crop";
+        matchedRealistic = true;
+      } else if (lowerSku.includes("logitech") || lowerSku.includes("mx master")) {
+        image_url = "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?q=80&w=800&auto=format&fit=crop";
+        matchedRealistic = true;
+      }
+
+      if (matchedRealistic) {
+        item.image_url = image_url;
+      }
+
+      return item;
+    });
+
+    return NextResponse.json({ success: true, items: enhancedCartItems });
   } catch (error) {
     console.error("Cart GET Error:", error);
     return NextResponse.json({ error: "Failed to fetch cart" }, { status: 500 });

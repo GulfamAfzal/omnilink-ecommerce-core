@@ -54,10 +54,22 @@ export default function AdminLoginPage() {
           </div>
 
           <h1 style={rightTitle}>Enterprise Operations<br />Command Center</h1>
-          <p style={rightSub}>
-            Secure administrative access to the OMNILINK polyglot commerce infrastructure.
-            Manage orders, inventory, users, and regional analytics across all global hubs.
-          </p>
+
+          {/* Quick spec bullets */}
+          <div style={specList}>
+            {[
+              { dot: '#06B6D4', text: 'Azure SQL — Financial core, orders & tax ledgers' },
+              { dot: '#10B981', text: 'MongoDB Atlas — Product catalog, 12 collections' },
+              { dot: '#F59E0B', text: '3 Global hubs: South Asia · North America · Europe' },
+              { dot: '#8B5CF6', text: 'Role-based access: Admin vs Manager boundaries' },
+              { dot: '#06B6D4', text: 'Full CRUD: Orders, Inventory, Users, Analytics' },
+            ].map(({ dot, text }) => (
+              <div key={text} style={specItem}>
+                <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: dot, flexShrink: 0, marginTop: '2px' }}></span>
+                <span style={specText}>{text}</span>
+              </div>
+            ))}
+          </div>
 
           {/* Infrastructure Nodes */}
           <div style={infraGrid}>
@@ -65,7 +77,7 @@ export default function AdminLoginPage() {
               <Database size={18} color="#06B6D4" strokeWidth={1.5} />
               <div>
                 <div style={infraLabel}>Azure SQL</div>
-                <div style={infraSub}>Financial Core · OMS_Financial_Core</div>
+                <div style={infraSub}>OMS_Financial_Core</div>
               </div>
               <span style={infoBadge}>Live</span>
             </div>
@@ -73,35 +85,10 @@ export default function AdminLoginPage() {
               <Server size={18} color="#10B981" strokeWidth={1.5} />
               <div>
                 <div style={infraLabel}>MongoDB Atlas</div>
-                <div style={infraSub}>Product Catalog · 12 Collections</div>
+                <div style={infraSub}>OMS_Product_Catalog</div>
               </div>
               <span style={{ ...infoBadge, color: '#10B981', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)' }}>Live</span>
             </div>
-            <div style={infraCard}>
-              <Globe size={18} color="#F59E0B" strokeWidth={1.5} />
-              <div>
-                <div style={infraLabel}>Global Regions</div>
-                <div style={infraSub}>South Asia · North America · Europe</div>
-              </div>
-              <span style={{ ...infoBadge, color: '#F59E0B', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}>3</span>
-            </div>
-          </div>
-
-          {/* Admin Profile Parameters */}
-          <div style={paramBox}>
-            <div style={paramTitle}>Administrator Access Grants</div>
-            {[
-              ['Order Management',     'Full CRUD · All Regions'],
-              ['Inventory Control',    'Stock · Variants · Pricing'],
-              ['User Administration',  'Roles · Regions · Permissions'],
-              ['Analytics Dashboard',  'Revenue · Tax · Fulfillment KPIs'],
-              ['Audit Logs',           'System-Wide Activity Trace'],
-            ].map(([key, val]) => (
-              <div key={key} style={paramRow}>
-                <span style={paramKey}>{key}</span>
-                <span style={paramVal}>{val}</span>
-              </div>
-            ))}
           </div>
         </div>
       </div>
@@ -282,18 +269,23 @@ const leftPanel   = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '3rem 2rem',
+  padding: '3rem 2.5rem',
   backgroundColor: '#D0E1FD',
 };
 const formCard    = {
   width: '100%',
-  maxWidth: '380px',
+  maxWidth: '420px',
   backgroundColor: '#EBF2F7',
   border: '1px solid #B0C4DE',
-  borderRadius: '16px',
-  padding: '2.5rem',
-  boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+  borderRadius: '20px',
+  padding: '2.75rem',
+  boxShadow: '0 12px 40px rgba(0,0,0,0.06)',
 };
+
+/* Spec bullet list */
+const specList = { display: 'flex', flexDirection: 'column', gap: '10px', margin: '1.5rem 0 2rem' };
+const specItem = { display: 'flex', alignItems: 'flex-start', gap: '10px' };
+const specText = { fontSize: '0.875rem', color: '#334155', lineHeight: '1.5' };
 const formHeader  = { textAlign: 'center', marginBottom: '2rem' };
 const lockIcon    = {
   width: '48px', height: '48px',

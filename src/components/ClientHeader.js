@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ShoppingCart, User, Globe, LogOut, Shield } from 'lucide-react';
+import { ShoppingCart, User, Globe, LogOut, Shield, ShoppingBag } from 'lucide-react';
 import CartDrawer from './CartDrawer';
 
 export default function ClientHeader() {
@@ -65,16 +65,18 @@ export default function ClientHeader() {
 
           {/* Logo */}
           <Link href="/" style={logoLink}>
-            <img src="/logo.png" alt="Logo" style={{ height: '32px', width: '32px', objectFit: 'contain' }} onError={(e) => e.target.style.display='none'} />
+            <ShoppingBag size={24} color="#38BDF8" strokeWidth={2} />
             <span style={logoBrand}>
-              <span style={{ color: '#38BDF8' }}>OMS</span>
-              {' '}OMNILINK
+              <span style={{ color: '#38BDF8' }}>OMNILINK</span>
+              {' '}Core
             </span>
           </Link>
 
           {/* Nav Links */}
           <nav style={navLinks}>
-            <Link href="/" style={navItem}>Marketplace</Link>
+            <Link href="/about" style={navItem}>About</Link>
+            <Link href="/contact" style={navItem}>Contact</Link>
+            <Link href="/help" style={navItem}>Help</Link>
             {user?.userType === 'Admin' && (
               <Link href="/admin/orders" style={opsLink}>
                 <Shield size={13} strokeWidth={2.5} />

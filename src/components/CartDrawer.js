@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { resolveImageUrl, handleImageError } from '@/lib/imageUtils';
 
 export default function CartDrawer({ isOpen, onClose }) {
   const router = useRouter();
@@ -82,10 +83,10 @@ export default function CartDrawer({ isOpen, onClose }) {
                 <div key={idx} style={cartItemRow}>
                   <div style={itemImageBox}>
                     <img
-                      src={item.image_url || '/logo.png'}
+                      src={resolveImageUrl(item.image_url)}
                       alt={item.sku}
                       style={itemImg}
-                      onError={(e) => e.target.src = '/logo.png'}
+                      onError={handleImageError}
                     />
                   </div>
                   <div style={itemDetails}>
