@@ -15,10 +15,20 @@ export default function ContactPage() {
     if (!form.name || !form.email || !form.message) { setError('Please fill in all required fields.'); return; }
     setError(null);
     setSubmitting(true);
-    // Mock submission — replace with real API call when backend is ready
-    await new Promise(r => setTimeout(r, 1200));
-    setSubmitted(true);
-    setSubmitting(false);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send message');
+      setSubmitted(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
