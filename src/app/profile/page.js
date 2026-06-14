@@ -437,8 +437,8 @@ export default function ProfilePage() {
                     <option value="" disabled>Select a product from your order history</option>
                     {orders.flatMap(o => o.items)
                       .filter((v, i, a) => a.findIndex(t => (t.productId === v.productId)) === i)
-                      .map(item => (
-                        <option key={item.productId} value={item.productId}>
+                      .map((item, idx) => (
+                        <option key={item.productId || `prod-${idx}`} value={item.productId || ''}>
                           {item.sku}
                         </option>
                     ))}
