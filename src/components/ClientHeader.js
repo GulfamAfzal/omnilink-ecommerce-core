@@ -65,7 +65,7 @@ export default function ClientHeader() {
 
           {/* Logo */}
           <Link href="/" style={logoLink}>
-            <ShoppingBag size={24} color="#38BDF8" strokeWidth={2} />
+            <img src="/logo.png" alt="Logo" style={{ height: '26px', width: 'auto', borderRadius: '6px' }} />
             <span style={logoBrand}>
               <span style={{ color: '#38BDF8' }}>OMNILINK</span>
               {' '}Core
