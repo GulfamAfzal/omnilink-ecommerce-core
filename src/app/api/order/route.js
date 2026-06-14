@@ -21,6 +21,9 @@ export async function POST(request) {
             return NextResponse.json({ error: "Product not found in MongoDB Catalog" }, { status: 404 });
         }
 
+        // Fetch parent product to get the name
+        const parentProduct = await db.collection("Products").findOne({ _id: mongoProduct.product_id });
+
         // 2. PHASE 2: AZURE SQL (Transactional Processing)
         pool = await getSqlConnection();
         const transaction = new sql.Transaction(pool);
@@ -71,7 +74,7 @@ export async function POST(request) {
                 message: "Hybrid Transaction Succeeded!",
                 order_details: {
                     order_id: newOrderId,
-                    product_name: mongoProduct.name, // Data from Mongo
+                    product_name: parentProduct ? parentProduct.name : `Hardware Node (${variant_id})`, // Data from Mongo
                     total_paid: totalAmount          // Data from SQL
                 }
             }, { status: 200 });
