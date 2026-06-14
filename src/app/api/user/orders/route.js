@@ -90,6 +90,7 @@ export async function GET(request) {
         ordersMap.get(row.order_id).items.push({
           detailId: row.order_detail_id,
           variantId: row.product_variant_id,
+          productId: vDoc.product_id?.toString() || row.product_variant_id, // Expose product ID for reviews
           sku: vDoc.sku || row.product_variant_id?.substring(0, 10) || 'SKU',
           unitPrice: row.unit_price || 0,
           quantity: row.quantity || 1

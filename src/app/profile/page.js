@@ -167,7 +167,7 @@ export default function ProfilePage() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    if (tab === 'orders' && orders.length === 0) fetchOrders();
+    if ((tab === 'orders' || tab === 'reviews') && orders.length === 0) fetchOrders();
   };
 
   const handleProfileUpdate = async (e) => {
@@ -432,8 +432,17 @@ export default function ProfilePage() {
 
               <form onSubmit={handleReviewSubmit} style={reviewForm}>
                 <div>
-                  <label style={inputLabel}>Product ID</label>
-                  <input type="text" placeholder="e.g. 68438a5e3c2a5f001234abcd" value={reviewProductId} onChange={e => setReviewProductId(e.target.value)} style={inputField} required />
+                  <label style={inputLabel}>Purchased Product</label>
+                  <select value={reviewProductId} onChange={e => setReviewProductId(e.target.value)} style={inputField} required>
+                    <option value="" disabled>Select a product from your order history</option>
+                    {orders.flatMap(o => o.items)
+                      .filter((v, i, a) => a.findIndex(t => (t.productId === v.productId)) === i)
+                      .map(item => (
+                        <option key={item.productId} value={item.productId}>
+                          {item.sku}
+                        </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>

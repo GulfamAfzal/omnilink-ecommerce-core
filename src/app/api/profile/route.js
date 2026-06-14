@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import { getSqlConnection } from '@/lib/azuresql';
 import sql from 'mssql';
 
 export const dynamic = 'force-dynamic';
-
-const sqlConfig = {
-  server: process.env.AZURE_SQL_SERVER,
-  database: process.env.AZURE_SQL_DATABASE,
-  authentication: { type: 'azure-active-directory-default', options: {} },
-  options: { encrypt: true, trustServerCertificate: false }
-};
 
 export async function GET(request) {
   try {
@@ -28,7 +22,7 @@ export async function GET(request) {
     }
 
     // Connect to Azure SQL to get profile
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getSqlConnection();
     const result = await pool.request()
       .input('userId', sql.Int, session.user_id)
       .query(`
@@ -87,7 +81,7 @@ export async function PUT(request) {
     }
 
     // Connect to Azure SQL to update profile
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getSqlConnection();
     const result = await pool.request()
       .input('userId', sql.Int, session.user_id)
       .input('firstName', sql.NVarChar(50), first_name || '')

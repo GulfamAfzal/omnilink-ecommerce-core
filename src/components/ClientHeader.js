@@ -108,7 +108,7 @@ export default function ClientHeader() {
                 </div>
                 <Link href="/profile" style={userBtn}>
                   <User size={13} strokeWidth={2} />
-                  {user.firstName}
+                  {user.firstName || user.username || 'My Profile'}
                 </Link>
                 <button onClick={handleLogout} style={logoutBtn} aria-label="Sign out">
                   <LogOut size={14} strokeWidth={2} />
