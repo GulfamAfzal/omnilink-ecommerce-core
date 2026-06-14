@@ -122,7 +122,7 @@ export default function ProfilePage() {
 
   // Profile Edit Form State
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({ first_name: '', last_name: '', contact_number: '', currency: '' });
+  const [formData, setFormData] = useState({ first_name: '', last_name: '', contact_number: '', currency: '', address: '' });
   const [saveLoading, setSaveLoading] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -148,7 +148,8 @@ export default function ProfilePage() {
             first_name: data.profile.first_name || '',
             last_name: data.profile.last_name || '',
             contact_number: data.profile.contact_number || '',
-            currency: data.profile.currency || 'USD'
+            currency: data.profile.currency || 'USD',
+            address: data.profile.address || ''
           });
         }
         else setError(data.error || 'Failed to load profile');
@@ -167,7 +168,7 @@ export default function ProfilePage() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    if (tab === 'orders' && orders.length === 0) fetchOrders();
+    if ((tab === 'orders' || tab === 'reviews') && orders.length === 0) fetchOrders();
   };
 
   const handleProfileUpdate = async (e) => {
@@ -322,7 +323,12 @@ export default function ProfilePage() {
                       <option value="USD">USD ($)</option>
                       <option value="EUR">EUR (€)</option>
                       <option value="GBP">GBP (£)</option>
+                      <option value="PKR">PKR (Rs)</option>
                     </select>
+                  </div>
+                  <div style={{ gridColumn: 'span 2' }}>
+                    <label style={inputLabel}>Full Address</label>
+                    <textarea value={formData.address} onChange={e=>setFormData({...formData, address: e.target.value})} style={{...inputField, resize: 'vertical'}} rows={2} placeholder="123 Example Street, City, ZIP"></textarea>
                   </div>
                   <div style={{ gridColumn: 'span 2', display: 'flex', gap: '12px', marginTop: '8px' }}>
                     <button type="submit" disabled={saveLoading} style={btnSave}>
@@ -344,6 +350,7 @@ export default function ProfilePage() {
                     ['Permissions', profile?.permissions || 'Standard Access'],
                     ['Region', profile?.region_name || 'Global Hub'],
                     ['Currency', profile?.currency || 'USD'],
+                    ['Address', profile?.address || 'Not provided'],
                   ].map(([label, value]) => (
                     <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <div style={inputLabel}>{label}</div>
@@ -432,8 +439,17 @@ export default function ProfilePage() {
 
               <form onSubmit={handleReviewSubmit} style={reviewForm}>
                 <div>
-                  <label style={inputLabel}>Product ID</label>
-                  <input type="text" placeholder="e.g. 68438a5e3c2a5f001234abcd" value={reviewProductId} onChange={e => setReviewProductId(e.target.value)} style={inputField} required />
+                  <label style={inputLabel}>Purchased Product</label>
+                  <select value={reviewProductId} onChange={e => setReviewProductId(e.target.value)} style={inputField} required>
+                    <option value="" disabled>Select a product from your order history</option>
+                    {orders.flatMap(o => o.items)
+                      .filter((v, i, a) => a.findIndex(t => (t.productId === v.productId)) === i)
+                      .map((item, idx) => (
+                        <option key={item.productId || `prod-${idx}`} value={item.productId || ''}>
+                          {item.sku}
+                        </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>

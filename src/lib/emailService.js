@@ -155,3 +155,54 @@ export async function sendOrderConfirmationEmail({
 
   console.log(`✅ Order confirmation email sent to ${toEmail}`);
 }
+
+/**
+ * Sends a customer support inquiry to the administrative emails.
+ * @param {object} options
+ * @param {string} options.name    - Customer full name
+ * @param {string} options.email   - Customer email address
+ * @param {string} options.orderNo - Optional order number
+ * @param {string} options.message - The inquiry message
+ */
+export async function sendSupportEmail({ name, email, orderNo, message }) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.warn('⚠️ Email credentials not set. Skipping support email notification.');
+    return;
+  }
+
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>New Support Inquiry — OMS OMNILINK</title>
+</head>
+<body style="margin:0; padding:32px; background-color:#EBF2F7; font-family: 'Segoe UI', Arial, sans-serif;">
+  <div style="max-width:600px; margin:0 auto; background:#FFFFFF; border-radius:16px; padding:32px; box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <h2 style="color:#0F172A; margin-top:0;">New Support Inquiry</h2>
+    <p style="color:#475569; font-size:14px;">You have received a new message from the OMNILINK Contact form.</p>
+    
+    <div style="background:#F4F8FA; border:1px solid #B0C4DE; border-radius:10px; padding:20px; margin-top:24px;">
+      <div style="margin-bottom:12px;"><strong>Name:</strong> ${name}</div>
+      <div style="margin-bottom:12px;"><strong>Email:</strong> <a href="mailto:${email}">${email}</a></div>
+      <div style="margin-bottom:12px;"><strong>Order Number:</strong> ${orderNo || 'N/A'}</div>
+      <div style="margin-top:20px; padding-top:16px; border-top:1px solid #B0C4DE;">
+        <strong>Message:</strong><br/>
+        <p style="white-space: pre-wrap; color:#334155; line-height:1.6;">${message}</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  await transporter.sendMail({
+    from: `"OMNILINK System" <${process.env.EMAIL_USER}>`,
+    to: 'gulfamafzal84@gmail.com, reehabatool3536@gmail.com', // Sending to both admins
+    replyTo: email,
+    subject: `Support Inquiry from ${name}${orderNo ? ` (Order #${orderNo})` : ''}`,
+    html,
+  });
+
+  console.log(`✅ Support inquiry from ${email} forwarded to admins.`);
+}

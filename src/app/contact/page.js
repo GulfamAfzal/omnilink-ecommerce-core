@@ -15,10 +15,20 @@ export default function ContactPage() {
     if (!form.name || !form.email || !form.message) { setError('Please fill in all required fields.'); return; }
     setError(null);
     setSubmitting(true);
-    // Mock submission — replace with real API call when backend is ready
-    await new Promise(r => setTimeout(r, 1200));
-    setSubmitted(true);
-    setSubmitting(false);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send message');
+      setSubmitted(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -100,9 +110,9 @@ export default function ContactPage() {
           {/* RIGHT: Info sidebar */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {[
-              { icon: Mail,  color: '#2563EB', title: 'Email Support', lines: ['support@omnilink.com', 'Response within 24 hours'] },
-              { icon: Phone, color: '#10B981', title: 'Phone Support', lines: ['+92 42 111 000 001', 'Mon–Fri, 9 AM – 6 PM'] },
-              { icon: Clock, color: '#F59E0B', title: 'Support Hours', lines: ['Monday – Friday', '09:00 AM – 06:00 PM PKT'] },
+              { icon: Mail,  color: '#2563EB', title: 'Email Support', lines: ['gulfamafzal84@gmail.com', 'reehabatool3536@gmail.com', 'All inquiries answered within 24 business hours.'] },
+              { icon: Phone, color: '#10B981', title: 'Phone Support', lines: ['03454743847'] },
+              { icon: Clock, color: '#F59E0B', title: 'Support Hours', lines: ['Monday through Friday (Mon-Fri)', '09:00 AM to 06:00 PM Pakistan Standard Time (PKT)'] },
             ].map(({ icon: Icon, color, title, lines }) => (
               <div key={title} style={infoCard}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: `${color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import { getSqlConnection } from '@/lib/azuresql';
 import sql from 'mssql';
 
 export const dynamic = 'force-dynamic';
-
-const sqlConfig = {
-  server: process.env.AZURE_SQL_SERVER,
-  database: process.env.AZURE_SQL_DATABASE,
-  authentication: { type: 'azure-active-directory-default', options: {} },
-  options: { encrypt: true, trustServerCertificate: false }
-};
 
 export async function GET(request) {
   try {
@@ -28,12 +22,12 @@ export async function GET(request) {
     }
 
     // Connect to Azure SQL to get profile
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getSqlConnection();
     const result = await pool.request()
       .input('userId', sql.Int, session.user_id)
       .query(`
         SELECT u.user_id, u.username, u.email, u.first_name, u.last_name, 
-               u.contact_number, u.user_type, u.currency, u.region_id, r.region_name
+               u.contact_number, u.user_type, u.currency, u.address, u.region_id, r.region_name
         FROM USERS u
         LEFT JOIN REGIONS r ON u.region_id = r.region_id
         WHERE u.user_id = @userId
@@ -55,6 +49,7 @@ export async function GET(request) {
       contact_number: String(userRow.contact_number || ''),
       user_type: String(userRow.user_type || 'Customer'),
       currency: String(userRow.currency || 'USD'),
+      address: String(userRow.address || ''),
       region_id: Number(userRow.region_id),
       region_name: String(userRow.region_name || 'Global Hub')
     };
@@ -75,7 +70,7 @@ export async function PUT(request) {
     }
 
     const body = await request.json();
-    const { first_name, last_name, contact_number, currency } = body;
+    const { first_name, last_name, contact_number, currency, address } = body;
 
     const client = await clientPromise;
     const db = client.db("OMS_Product_Catalog");
@@ -87,19 +82,21 @@ export async function PUT(request) {
     }
 
     // Connect to Azure SQL to update profile
-    const pool = await sql.connect(sqlConfig);
+    const pool = await getSqlConnection();
     const result = await pool.request()
       .input('userId', sql.Int, session.user_id)
       .input('firstName', sql.NVarChar(50), first_name || '')
       .input('lastName', sql.NVarChar(50), last_name || '')
       .input('contactNum', sql.NVarChar(20), contact_number || '')
       .input('currency', sql.NVarChar(3), currency || 'USD')
+      .input('address', sql.NVarChar(500), address || '')
       .query(`
         UPDATE USERS 
         SET first_name = @firstName, 
             last_name = @lastName, 
             contact_number = @contactNum, 
-            currency = @currency
+            currency = @currency,
+            address = @address
         WHERE user_id = @userId
       `);
 

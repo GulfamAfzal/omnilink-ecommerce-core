@@ -65,7 +65,7 @@ export default function ClientHeader() {
 
           {/* Logo */}
           <Link href="/" style={logoLink}>
-            <ShoppingBag size={24} color="#38BDF8" strokeWidth={2} />
+            <img src="/logo.png" alt="Logo" style={{ height: '26px', width: 'auto', borderRadius: '6px' }} />
             <span style={logoBrand}>
               <span style={{ color: '#38BDF8' }}>OMNILINK</span>
               {' '}Core
@@ -108,7 +108,7 @@ export default function ClientHeader() {
                 </div>
                 <Link href="/profile" style={userBtn}>
                   <User size={13} strokeWidth={2} />
-                  {user.firstName}
+                  {user.firstName || user.username || 'My Profile'}
                 </Link>
                 <button onClick={handleLogout} style={logoutBtn} aria-label="Sign out">
                   <LogOut size={14} strokeWidth={2} />
