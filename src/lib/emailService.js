@@ -6,7 +6,7 @@ import nodemailer from 'nodemailer';
  *
  * Required .env variables:
  *   EMAIL_USER=your_gmail@gmail.com
- *   EMAIL_PASS=your_gmail_app_password   (NOT your real password — see below)
+ *   EMAIL_PASS=your_gmail_app_password   (NOT your real password)
  *
  * How to get Gmail App Password:
  * 1. Go to your Google Account → Security
@@ -15,26 +15,34 @@ import nodemailer from 'nodemailer';
  * 4. Copy the 16-character code into EMAIL_PASS
  */
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+/**
+ * Creates a Nodemailer transporter with lazy initialization.
+ * Throws if credentials are missing or invalid.
+ */
+function createTransporter() {
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASS;
+
+  if (!user || !pass) {
+    throw new Error('Email credentials not configured. Set EMAIL_USER and EMAIL_PASS in .env');
+  }
+
+  // Detect placeholder values
+  if (user === 'your_gmail@gmail.com' || pass === 'your_16_char_app_password') {
+    throw new Error(
+      'Email credentials are still set to placeholder values. ' +
+      'Please update EMAIL_USER and EMAIL_PASS in your .env file with real Gmail credentials.'
+    );
+  }
+
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user, pass },
+  });
+}
 
 /**
  * Sends an order confirmation email to the customer.
- * @param {object} options
- * @param {string} options.toEmail      - Customer email address
- * @param {string} options.customerName - Customer first name
- * @param {number} options.orderId      - Order ID from Azure SQL
- * @param {Array}  options.items        - Array of cart items [{ sku, quantity, price }]
- * @param {number} options.subtotal     - Subtotal before tax
- * @param {number} options.taxAmount    - Tax amount
- * @param {number} options.totalAmount  - Final total
- * @param {string} options.currency     - Currency code e.g. 'USD'
- * @param {string} options.regionName   - Region name e.g. 'North America'
  */
 export async function sendOrderConfirmationEmail({
   toEmail,
@@ -47,10 +55,7 @@ export async function sendOrderConfirmationEmail({
   currency = 'USD',
   regionName = 'Global',
 }) {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.warn('⚠️ Email credentials not set. Skipping email notification.');
-    return;
-  }
+  const transporter = createTransporter(); // will throw if not configured
 
   // Build items table rows
   const itemRows = items.map(item => `
@@ -158,17 +163,9 @@ export async function sendOrderConfirmationEmail({
 
 /**
  * Sends a customer support inquiry to the administrative emails.
- * @param {object} options
- * @param {string} options.name    - Customer full name
- * @param {string} options.email   - Customer email address
- * @param {string} options.orderNo - Optional order number
- * @param {string} options.message - The inquiry message
  */
 export async function sendSupportEmail({ name, email, orderNo, message }) {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.warn('⚠️ Email credentials not set. Skipping support email notification.');
-    return;
-  }
+  const transporter = createTransporter(); // will throw if not configured
 
   const html = `
 <!DOCTYPE html>
@@ -198,7 +195,7 @@ export async function sendSupportEmail({ name, email, orderNo, message }) {
 
   await transporter.sendMail({
     from: `"OMNILINK System" <${process.env.EMAIL_USER}>`,
-    to: 'gulfamafzal84@gmail.com, reehabatool3536@gmail.com', // Sending to both admins
+    to: 'gulfamafzal84@gmail.com, reehabatool3536@gmail.com',
     replyTo: email,
     subject: `Support Inquiry from ${name}${orderNo ? ` (Order #${orderNo})` : ''}`,
     html,

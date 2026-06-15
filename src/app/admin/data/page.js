@@ -222,7 +222,13 @@ function ProductsTab() {
           <div style={formGroup}>
             <label style={formLabel}>Category</label>
             <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} style={formInput}>
-              {['Electronics', 'Smartphones', 'Laptops', 'Audio', 'Accessories', 'Peripherals', 'Tablets'].map(c => <option key={c}>{c}</option>)}
+              {[
+                'Electronics', 'Smartphones', 'Laptops', 'Tablets', 'Audio',
+                'Accessories', 'Peripherals', 'Cameras', 'Gaming', 'Wearables',
+                'Clothing', 'Shoes', 'Bags', 'Jewellery',
+                'Home Appliances', 'Furniture', 'Kitchen',
+                'Sports', 'Books', 'Toys', 'Food', 'Beauty', 'Automotive', 'Other'
+              ].map(c => <option key={c}>{c}</option>)}
             </select>
           </div>
 
@@ -263,7 +269,8 @@ function ProductsTab() {
 //  TAB: ADD VARIANT
 // ============================================================
 function VariantsTab() {
-  const [form, setForm] = useState({ productId: '', sku: '', price: '', currency: 'USD', color: '', size: '', storage: '', imageUrl: '', initialStock: '10', regionId: '' });
+  const [form, setForm] = useState({ productId: '', sku: '', price: '', currency: 'USD', imageUrl: '', initialStock: '10', regionId: '' });
+  const [specs, setSpecs] = useState([{ key: '', value: '' }]);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
   const [products, setProducts] = useState([]);
@@ -274,23 +281,78 @@ function VariantsTab() {
     fetch('/api/admin/products').then(r => r.json()).then(d => setProducts(d.products || []));
   }, []);
 
+  const addSpec = () => setSpecs(s => [...s, { key: '', value: '' }]);
+  const removeSpec = (i) => setSpecs(s => s.filter((_, idx) => idx !== i));
+  const updateSpec = (i, field, val) => setSpecs(s => s.map((sp, idx) => idx === i ? { ...sp, [field]: val } : sp));
+
+  // Pre-fill common spec keys based on selected product's category
+  const selectedProduct = products.find(p => p._id === form.productId);
+  const CATEGORY_SPEC_TEMPLATES = {
+    'Smartphones':   ['Color', 'Storage', 'RAM', 'Display Size', 'Battery', 'OS', 'Camera'],
+    'Laptops':       ['Color', 'Storage', 'RAM', 'Processor', 'Display Size', 'Battery', 'OS', 'Weight'],
+    'Tablets':       ['Color', 'Storage', 'RAM', 'Display Size', 'Battery', 'OS'],
+    'Audio':         ['Color', 'Driver Size', 'Frequency Response', 'Impedance', 'Battery', 'Connectivity', 'Type'],
+    'Accessories':   ['Color', 'Material', 'Compatibility', 'Weight'],
+    'Peripherals':   ['Color', 'Connectivity', 'DPI', 'Compatibility', 'Weight'],
+    'Cameras':       ['Color', 'Resolution', 'Sensor', 'Lens', 'Battery'],
+    'Gaming':        ['Color', 'Connectivity', 'Compatibility', 'Battery', 'Type'],
+    'Wearables':     ['Color', 'Display', 'Battery', 'Water Resistance', 'Connectivity'],
+    'Clothing':      ['Color', 'Size', 'Material', 'Gender', 'Fit'],
+    'Shoes':         ['Color', 'Size', 'Material', 'Gender', 'Sole'],
+    'Bags':          ['Color', 'Material', 'Dimensions', 'Capacity', 'Closure'],
+    'Home Appliances': ['Color', 'Wattage', 'Voltage', 'Dimensions', 'Weight', 'Warranty'],
+    'Furniture':     ['Color', 'Material', 'Dimensions', 'Weight', 'Assembly Required'],
+    'Kitchen':       ['Color', 'Material', 'Capacity', 'Wattage', 'Warranty'],
+    'Sports':        ['Color', 'Size', 'Material', 'Weight'],
+    'Beauty':        ['Shade', 'Volume', 'Ingredients', 'Skin Type', 'Expiry'],
+    'Food':          ['Weight', 'Flavour', 'Ingredients', 'Expiry', 'Allergens'],
+    'Automotive':    ['Color', 'Material', 'Compatibility', 'Weight'],
+  };
+
+  const applyTemplate = () => {
+    const cat = selectedProduct?.category || '';
+    const keys = CATEGORY_SPEC_TEMPLATES[cat] || [];
+    if (keys.length === 0) { showToast('No template for this category — add specs manually.', 'error'); return; }
+    setSpecs(keys.map(k => ({ key: k, value: '' })));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    // Build specifications object from the dynamic spec rows
+    const specificationsObj = {};
+    specs.forEach(({ key, value }) => {
+      if (key.trim() && value.trim()) specificationsObj[key.trim()] = value.trim();
+    });
     const res = await fetch('/api/admin/variants', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, price: parseFloat(form.price), initialStock: parseInt(form.initialStock) })
+      body: JSON.stringify({
+        ...form,
+        price: parseFloat(form.price),
+        initialStock: parseInt(form.initialStock),
+        specifications: specificationsObj
+      })
     });
     const data = await res.json();
     if (res.ok) {
       showToast(`✓ ${data.message}`);
-      setForm(f => ({ ...f, sku: '', price: '', color: '', size: '', storage: '', imageUrl: '', initialStock: '10' }));
+      setForm(f => ({ ...f, sku: '', price: '', imageUrl: '', initialStock: '10' }));
+      setSpecs([{ key: '', value: '' }]);
     } else {
       showToast(data.error, 'error');
     }
     setSubmitting(false);
   };
+
+  const COMMON_SPEC_KEYS = [
+    'Color', 'Size', 'Storage', 'RAM', 'Battery', 'Processor', 'Display Size',
+    'Material', 'Weight', 'Dimensions', 'Connectivity', 'OS', 'Warranty',
+    'Gender', 'Fit', 'Sole', 'Wattage', 'Voltage', 'Capacity', 'Shade',
+    'Volume', 'Ingredients', 'Expiry', 'Compatibility', 'Type', 'Resolution',
+    'Sensor', 'DPI', 'Frequency Response', 'Impedance', 'Driver Size',
+    'Water Resistance', 'Assembly Required', 'Skin Type', 'Flavour', 'Allergens'
+  ];
 
   return (
     <div style={twoColGrid}>
@@ -305,7 +367,7 @@ function VariantsTab() {
             <label style={formLabel}>Parent Product *</label>
             <select value={form.productId} onChange={e => setForm(f => ({ ...f, productId: e.target.value }))} style={formInput} required>
               <option value="">— Select a Product —</option>
-              {products.map(p => <option key={p._id} value={p._id}>{p.name} ({p.brand})</option>)}
+              {products.map(p => <option key={p._id} value={p._id}>{p.name} ({p.brand}) [{p.category}]</option>)}
             </select>
             <div style={fieldHint}>If product not listed, create it first in the "Add Product" tab</div>
           </div>
@@ -317,18 +379,54 @@ function VariantsTab() {
             <div style={formGroup}>
               <label style={formLabel}>Currency</label>
               <select value={form.currency} onChange={e => setForm(f => ({ ...f, currency: e.target.value }))} style={formInput}>
-                {['USD', 'EUR', 'GBP', 'PKR', 'SAR'].map(c => <option key={c}>{c}</option>)}
+                {['USD', 'EUR', 'GBP', 'PKR', 'SAR', 'AED', 'JPY'].map(c => <option key={c}>{c}</option>)}
               </select>
             </div>
           </div>
 
+          {/* Dynamic Spec Builder */}
           <div style={specSection}>
-            <div style={specLabel}>Specifications (optional)</div>
-            <div style={threeFieldRow}>
-              <FormField label="Color" placeholder="e.g. Black Titanium" value={form.color} onChange={v => setForm(f => ({ ...f, color: v }))} />
-              <FormField label="Storage" placeholder="e.g. 256GB" value={form.storage} onChange={v => setForm(f => ({ ...f, storage: v }))} />
-              <FormField label="Size" placeholder="e.g. 6.9 inch" value={form.size} onChange={v => setForm(f => ({ ...f, size: v }))} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div>
+                <div style={specLabel}>Specifications</div>
+                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>Add any key-value specs — fully flexible for any product type</div>
+              </div>
+              {selectedProduct && (
+                <button type="button" onClick={applyTemplate} style={templateBtn}>
+                  ⚡ Use {selectedProduct.category} Template
+                </button>
+              )}
             </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {specs.map((sp, i) => (
+                <div key={i} style={specRow}>
+                  <div style={{ flex: 1 }}>
+                    <input
+                      list={`spec-keys-${i}`}
+                      placeholder="Spec name (e.g. Color)"
+                      value={sp.key}
+                      onChange={e => updateSpec(i, 'key', e.target.value)}
+                      style={{ ...formInput, fontSize: '13px' }}
+                    />
+                    <datalist id={`spec-keys-${i}`}>
+                      {COMMON_SPEC_KEYS.map(k => <option key={k} value={k} />)}
+                    </datalist>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <input
+                      placeholder="Value (e.g. Black)"
+                      value={sp.value}
+                      onChange={e => updateSpec(i, 'value', e.target.value)}
+                      style={{ ...formInput, fontSize: '13px' }}
+                    />
+                  </div>
+                  <button type="button" onClick={() => removeSpec(i)} style={specRemoveBtn} title="Remove spec">✕</button>
+                </div>
+              ))}
+            </div>
+
+            <button type="button" onClick={addSpec} style={addSpecBtn}>+ Add Spec</button>
           </div>
 
           <FormField label="Variant Image URL" placeholder="https://..." value={form.imageUrl} onChange={v => setForm(f => ({ ...f, imageUrl: v }))} />
@@ -584,3 +682,10 @@ const stepDesc = { fontSize: '12px', color: '#64748b', marginTop: '3px', lineHei
 const spinnerStyle = { width: '32px', height: '32px', border: '3px solid #f1f5f9', borderTop: '3px solid #6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite' };
 const toastStyle = { padding: '14px 20px', borderRadius: '12px', border: '1px solid', fontSize: '14px', fontWeight: '700', lineHeight: '1.5' };
 const code = { fontFamily: 'monospace', fontSize: '11px', backgroundColor: '#f1f5f9', padding: '1px 6px', borderRadius: '4px', color: '#475569' };
+
+// Dynamic Spec Builder styles
+const specRow = { display: 'flex', gap: '8px', alignItems: 'center' };
+const specRemoveBtn = { padding: '8px 10px', border: '1px solid #fecaca', borderRadius: '8px', backgroundColor: '#fef2f2', color: '#dc2626', cursor: 'pointer', fontWeight: '700', fontSize: '13px', flexShrink: 0, lineHeight: 1 };
+const addSpecBtn = { marginTop: '10px', padding: '8px 16px', border: '1px dashed #94a3b8', borderRadius: '8px', backgroundColor: 'transparent', color: '#475569', cursor: 'pointer', fontWeight: '700', fontSize: '13px', width: '100%', textAlign: 'center' };
+const templateBtn = { padding: '6px 12px', border: '1px solid #c7d2fe', borderRadius: '8px', backgroundColor: '#ede9fe', color: '#4f46e5', cursor: 'pointer', fontWeight: '700', fontSize: '11px', whiteSpace: 'nowrap', flexShrink: 0 };
+

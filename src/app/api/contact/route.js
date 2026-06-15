@@ -14,18 +14,27 @@ export async function POST(req) {
     try {
       await sendSupportEmail({ name, email, orderNo, message });
     } catch (emailErr) {
-      console.error("Failed to send support email:", emailErr);
-      // We can still return success to the user if we just logged it,
-      // but if the email is critical we return an error.
-      // Usually, we return success but warn logs. Let's return error if email actually fails
-      // to let the user know.
-      return NextResponse.json({ error: 'Failed to send message. Please try again later.' }, { status: 500 });
+      console.error('Failed to send support email:', emailErr);
+
+      // Distinguish between config error and SMTP error
+      const isConfigError = emailErr.message?.includes('credentials') || emailErr.message?.includes('placeholder');
+      if (isConfigError) {
+        return NextResponse.json({
+          error: 'Email service is not configured. Please set EMAIL_USER and EMAIL_PASS in your .env file.',
+          details: emailErr.message,
+        }, { status: 503 });
+      }
+
+      return NextResponse.json({
+        error: 'Failed to send your message due to an email delivery error. Please try again later.',
+        details: process.env.NODE_ENV === 'development' ? emailErr.message : undefined,
+      }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, message: 'Message sent successfully' });
 
   } catch (error) {
-    console.error("Contact API Error:", error);
+    console.error('Contact API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
