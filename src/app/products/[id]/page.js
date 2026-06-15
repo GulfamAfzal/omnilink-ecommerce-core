@@ -2,6 +2,7 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { Star, Trash2, Plus, Minus, ShoppingCart, CreditCard } from 'lucide-react';
+import { resolveImageUrl } from '@/lib/imageUtils';
 
 export default function ProductDetailPage({ params }) {
   const resolvedParams = use(params);
@@ -97,7 +98,7 @@ export default function ProductDetailPage({ params }) {
   
   const inventoryData = primaryVariant.inventory_data?.[0];
   const inStock = inventoryData ? inventoryData.quantity > 0 : false;
-  const primaryImage = product.media?.[0]?.url || product.imageUrl || '/logo.png';
+  const primaryImage = resolveImageUrl(product.media?.[0]?.url || product.imageUrl || '');
   const avgRating = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
   return (

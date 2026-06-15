@@ -48,17 +48,48 @@ export default function CheckoutPage() {
 
   const handleGeolocate = () => {
     setGeoLoading(true);
-    if (!navigator.geolocation) { alert('Geolocation not supported by your browser.'); setGeoLoading(false); return; }
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser.');
+      setGeoLoading(false);
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
-      () => {
-        setTimeout(() => {
-          setAddress(a => ({ ...a, city: 'Lahore', province: 'Punjab', country: 'Pakistan' }));
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          // Use OpenStreetMap Nominatim for free reverse-geocoding (no API key needed)
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+            { headers: { 'Accept-Language': 'en', 'User-Agent': 'OMS-OMNILINK/2.0' } }
+          );
+          if (!res.ok) throw new Error('Geocoding request failed');
+          const geo = await res.json();
+          const addr = geo.address || {};
+          setAddress(a => ({
+            ...a,
+            street: [addr.road, addr.house_number].filter(Boolean).join(' ') || a.street,
+            city: addr.city || addr.town || addr.village || addr.county || '',
+            province: addr.state || addr.state_district || '',
+            country: addr.country || '',
+          }));
           setShippingFee(300);
           setTaxRate(0.17);
+        } catch (err) {
+          console.warn('Reverse geocoding failed, using coordinates:', err);
+          // Fallback: just note the coordinates
+          setAddress(a => ({ ...a, street: `Near ${latitude.toFixed(4)}, ${longitude.toFixed(4)}` }));
+        } finally {
           setGeoLoading(false);
-        }, 900);
+        }
       },
-      () => { alert('Location access denied. Please enter your address manually.'); setGeoLoading(false); }
+      (err) => {
+        const msg = err.code === 1
+          ? 'Location access was denied. Please enter your address manually.'
+          : 'Unable to detect your location. Please enter your address manually.';
+        alert(msg);
+        setGeoLoading(false);
+      },
+      { timeout: 10000, maximumAge: 60000 }
     );
   };
 

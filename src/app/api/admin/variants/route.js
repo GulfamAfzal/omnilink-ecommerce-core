@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { productId, sku, price, currency, color, size, storage, imageUrl, initialStock, regionId } = body;
+    const { productId, sku, price, currency, color, size, storage, imageUrl, initialStock, regionId, specifications } = body;
 
     if (!productId || !sku || !price) {
       return NextResponse.json({ error: "productId, sku, and price are required" }, { status: 400 });
@@ -37,11 +37,22 @@ export async function POST(request) {
       return NextResponse.json({ error: `SKU "${sku}" already exists. Use a unique SKU.` }, { status: 409 });
     }
 
-    // Build specifications object from optional fields
-    const specs = {};
-    if (color)   specs.color   = color.trim();
-    if (size)    specs.size    = size.trim();
-    if (storage) specs.storage = storage.trim();
+    // Build specifications — prefer the full arbitrary object from the new UI,
+    // fall back to legacy individual fields for backward compatibility
+    let specs = {};
+    if (specifications && typeof specifications === 'object' && !Array.isArray(specifications)) {
+      // New: arbitrary key-value pairs from the dynamic spec builder
+      specs = Object.fromEntries(
+        Object.entries(specifications)
+          .filter(([k, v]) => k && k.trim() && v !== undefined && v !== null && String(v).trim() !== '')
+          .map(([k, v]) => [k.trim(), String(v).trim()])
+      );
+    } else {
+      // Legacy: individual color/size/storage fields
+      if (color)   specs.color   = color.trim();
+      if (size)    specs.size    = size.trim();
+      if (storage) specs.storage = storage.trim();
+    }
 
     const variantOid = new ObjectId();
     const variant = {

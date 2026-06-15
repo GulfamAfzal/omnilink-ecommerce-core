@@ -52,31 +52,63 @@ export async function GET(request) {
 
     const cartItems = await db.collection("Carts").aggregate(pipeline).toArray();
 
-    // Data Enhancement for missing/broken images to match homepage
+    // ── Image Enhancement ────────────────────────────────────────────────
+    // Priority 1: Google Drive URL (variant image_url) → convert to thumbnail
+    // Priority 2: Existing direct URL → keep as-is
+    // Priority 3: No URL → Unsplash keyword fallback based on SKU
     const enhancedCartItems = cartItems.map(item => {
       let image_url = item.image_url;
-      const lowerSku = (item.sku || "").toLowerCase();
-      
-      let matchedRealistic = false;
-      
-      if (lowerSku.includes("iphone")) {
-        image_url = "https://images.unsplash.com/photo-1695048133142-1a20484d2569?q=80&w=800&auto=format&fit=crop";
-        matchedRealistic = true;
-      } else if (lowerSku.includes("wh-1000xm5") || lowerSku.includes("sony")) {
-        image_url = "https://images.unsplash.com/photo-1618366712277-722626e1e5fb?q=80&w=800&auto=format&fit=crop";
-        matchedRealistic = true;
-      } else if (lowerSku.includes("macbook")) {
-        image_url = "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800&auto=format&fit=crop";
-        matchedRealistic = true;
-      } else if (lowerSku.includes("logitech") || lowerSku.includes("mx master")) {
-        image_url = "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?q=80&w=800&auto=format&fit=crop";
-        matchedRealistic = true;
+
+      // ── Priority 1: Convert Google Drive links ────────────────────
+      if (image_url && (
+        image_url.includes('drive.google.com') ||
+        image_url.includes('docs.google.com') ||
+        image_url.includes('lh3.googleusercontent.com')
+      )) {
+        let driveId = null;
+        const fileMatch  = image_url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+        const idMatch    = image_url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        const lh3Match   = image_url.match(/lh3\.googleusercontent\.com(?:\/u\/\d+)?\/d\/([a-zA-Z0-9_-]+)/);
+        const thumbMatch = image_url.match(/thumbnail\?id=([a-zA-Z0-9_-]+)/);
+        if (fileMatch)       driveId = fileMatch[1];
+        else if (idMatch)    driveId = idMatch[1];
+        else if (lh3Match)   driveId = lh3Match[1];
+        else if (thumbMatch) driveId = thumbMatch[1];
+        if (driveId) {
+          item.image_url = `https://drive.google.com/thumbnail?id=${driveId}&sz=w800`;
+          return item; // ✅ Drive image resolved
+        }
       }
 
-      if (matchedRealistic) {
-        item.image_url = image_url;
-      }
+      // ── Priority 2: Non-Drive direct URL → keep untouched ─────────
+      if (image_url && image_url.startsWith('http')) return item;
 
+      // ── Priority 3: No URL → keyword fallback from SKU ────────────
+      const lowerSku = (item.sku || '').toLowerCase();
+      let fallback = null;
+
+      if      (lowerSku.includes('iphone') || lowerSku.includes('galaxy'))
+        fallback = 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?q=80&w=800&auto=format&fit=crop';
+      else if (lowerSku.includes('infinix'))
+        fallback = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format&fit=crop';
+      else if (lowerSku.includes('macbook'))
+        fallback = 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800&auto=format&fit=crop';
+      else if (lowerSku.includes('thinkbook') || lowerSku.includes('thinkpad') || lowerSku.includes('lenovo'))
+        fallback = 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?q=80&w=800&auto=format&fit=crop';
+      else if (lowerSku.startsWith('hp') || lowerSku.includes('hp-'))
+        fallback = 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?q=80&w=800&auto=format&fit=crop';
+      else if (lowerSku.includes('wh-1000xm5') || lowerSku.includes('sony'))
+        fallback = 'https://images.unsplash.com/photo-1618366712277-722626e1e5fb?q=80&w=800&auto=format&fit=crop';
+      else if (lowerSku.includes('audionic') || lowerSku.includes('headphone') || lowerSku.includes('hammer'))
+        fallback = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop';
+      else if (lowerSku.includes('ipad'))
+        fallback = 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=800&auto=format&fit=crop';
+      else if (lowerSku.includes('logitech') || lowerSku.includes('mx master'))
+        fallback = 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?q=80&w=800&auto=format&fit=crop';
+      else
+        fallback = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop';
+
+      item.image_url = fallback;
       return item;
     });
 

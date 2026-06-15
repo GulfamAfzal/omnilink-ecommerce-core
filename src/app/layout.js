@@ -3,6 +3,7 @@ import "./globals.css";
 import ClientHeader from '@/components/ClientHeader';
 import ParticleCanvas from '@/components/ParticleCanvas';
 import Link from 'next/link';
+import ChatBotWrapper from '@/components/ChatBotWrapper';
 
 const inter = Inter({
   variable: "--font-sans",
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
         <ParticleCanvas />
         <ClientHeader />
         <main style={mainStyle}>{children}</main>
+        <ChatBotWrapper />
         <footer style={footerStyle}>
           <div style={footerInner}>
             <div style={footerGrid}>
